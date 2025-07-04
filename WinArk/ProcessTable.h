@@ -103,4 +103,7 @@ private:
 	mutable std::unordered_map<WinSys::ProcessInfo*, ProcessInfoEx> m_ProcessesEx;
 	WinSys::ProcessManager m_ProcMgr;
 	int m_UpdateInterval = 1000;
+
+	typedef NTSTATUS(NTAPI* FN_NtResumeProcess)(_In_ HANDLE ProcessHandle);
+	FN_NtResumeProcess m_pfnNtResumeProcess = nullptr;
 };

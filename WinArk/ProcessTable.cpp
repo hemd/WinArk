@@ -25,11 +25,24 @@ NtSuspendProcess(
 	_In_ HANDLE ProcessHandle
 );
 
-extern "C" NTSTATUS NtResumeProcess(_In_ HANDLE ProcessHandle);
 
 CProcessTable::CProcessTable(BarInfo& bars,TableInfo& table)
 	:CTable(bars,table){
 	SetTableWindowInfo(bars.nbar);
+
+	// 加载 ntdll.dll 并获取函数地址
+	HMODULE hNtdll = LoadLibraryW(L"ntdll.dll");
+	if (hNtdll == NULL) {
+		// 处理错误: GetLastError()
+		return;
+	}
+	m_pfnNtResumeProcess =
+		(FN_NtResumeProcess)GetProcAddress(hNtdll, "NtResumeProcess");
+	if (m_pfnNtResumeProcess == NULL) {
+		// 处理错误: GetLastError()
+		FreeLibrary(hNtdll);
+		return;
+	}
 }
 
 int CProcessTable::ParseTableEntry(CString& s, char& mask, int& select, std::shared_ptr<WinSys::ProcessInfo>& info, int column) {
@@ -302,7 +315,7 @@ LRESULT CProcessTable::OnProcessResume(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	BOOL ok = false;
 	NTSTATUS status = STATUS_UNSUCCESSFUL;
 	if (hProcess) {
-		status = NtResumeProcess(hProcess);
+		status = m_pfnNtResumeProcess(hProcess);
 		if (NT_SUCCESS(status))
 			ok = true;
 		::CloseHandle(hProcess);

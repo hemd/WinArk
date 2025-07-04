@@ -325,7 +325,7 @@ std::shared_ptr<ProcessInfo> ProcessManager::Impl::BuildProcessInfo(
 		pi->ParentId = HandleToULong(info->InheritedFromUniqueProcessId);
 		pi->ClearThreads();
 		auto name = info->UniqueProcessId == 0 ? L"(Idle)" : std::wstring(info->ImageName.Buffer, info->ImageName.Length / sizeof(WCHAR));
-		if (info->UniqueProcessId > 0) {
+		if ((DWORD)info->UniqueProcessId > 0) {
 			pi->EProcess = DriverHelper::GetEprocess(info->UniqueProcessId);
 		}
 		HANDLE hProcess = DriverHelper::OpenProcess(HandleToUlong(info->UniqueProcessId), 
@@ -337,7 +337,7 @@ std::shared_ptr<ProcessInfo> ProcessManager::Impl::BuildProcessInfo(
 			}
 			::CloseHandle(hProcess);
 		}
-		if (extended && info->UniqueProcessId > 0) {
+		if (extended && (DWORD)info->UniqueProcessId > 0) {
 			auto ext = (SYSTEM_PROCESS_INFORMATION_EXTENSION*)((BYTE*)info +
 				FIELD_OFFSET(SYSTEM_PROCESS_INFORMATION, Threads) + sizeof(SYSTEM_EXTENDED_THREAD_INFORMATION) * info->NumberOfThreads);
 			pi->JobObjectId = ext->JobObjectId;

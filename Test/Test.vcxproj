@@ -42,7 +42,7 @@
     <Configuration>Debug</Configuration>
     <Platform Condition="'$(Platform)' == ''">Win32</Platform>
     <RootNamespace>Test</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -60,11 +60,12 @@
     <DriverType>WDM</DriverType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <TargetVersion>Windows7</TargetVersion>
+    <TargetVersion>Windows10</TargetVersion>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>WindowsKernelModeDriver10.0</PlatformToolset>
     <ConfigurationType>Driver</ConfigurationType>
     <DriverType>WDM</DriverType>
+    <Driver_SpectreMitigation>false</Driver_SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <TargetVersion>Windows10</TargetVersion>
@@ -72,6 +73,7 @@
     <PlatformToolset>WindowsKernelModeDriver10.0</PlatformToolset>
     <ConfigurationType>Driver</ConfigurationType>
     <DriverType>WDM</DriverType>
+    <Driver_SpectreMitigation>false</Driver_SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <TargetVersion>Windows10</TargetVersion>
@@ -155,11 +157,17 @@
     <Link>
       <AdditionalDependencies>Zydis.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ClCompile>
+      <TreatWarningAsError>false</TreatWarningAsError>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DriverSign>
       <FileDigestAlgorithm>sha256</FileDigestAlgorithm>
     </DriverSign>
+    <ClCompile>
+      <TreatWarningAsError>false</TreatWarningAsError>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <FilesToPackage Include="$(TargetPath)" />
