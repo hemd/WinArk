@@ -31,20 +31,20 @@ public:
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLBtnDown)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLBtnUp)
-		MESSAGE_HANDLER(WM_RBUTTONDOWN,OnRBtnDown)
+		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRBtnDown)
 		MESSAGE_HANDLER(WM_USER_STS, OnUserSts)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnWindowPosChanged)
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_SYSKEYDOWN, OnSysKeyDown)
-		COMMAND_ID_HANDLER(ID_SERVICE_START,OnServiceStart)
-		COMMAND_ID_HANDLER(ID_SERVICE_STOP,OnServiceStop)
+		COMMAND_ID_HANDLER(ID_SERVICE_START, OnServiceStart)
+		COMMAND_ID_HANDLER(ID_SERVICE_STOP, OnServiceStop)
 		COMMAND_ID_HANDLER(ID_SERVICE_PAUSE, OnServicePause)
 		COMMAND_ID_HANDLER(ID_SERVICE_CONTINUE, OnServiceContinue)
 		COMMAND_ID_HANDLER(ID_SERVICE_PROPERTIES, OnServiceProperties)
 		COMMAND_ID_HANDLER(ID_SERVICE_UNINSTALL, OnServiceDelete)
-		COMMAND_ID_HANDLER(ID_SERVICE_START_ALL,OnServiceStartAll)
-		COMMAND_ID_HANDLER(ID_SERVICE_EXPORT_BY_PID,OnExportByPid)
-		COMMAND_ID_HANDLER(ID_SERVICE_REFRESH,OnRefresh)
+		COMMAND_ID_HANDLER(ID_SERVICE_START_ALL, OnServiceStartAll)
+		COMMAND_ID_HANDLER(ID_SERVICE_EXPORT_BY_PID, OnExportByPid)
+		COMMAND_ID_HANDLER(ID_SERVICE_REFRESH, OnRefresh)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
@@ -78,8 +78,8 @@ public:
 
 private:
 	enum class ServiceColumn {
-		Name,DisplayName,State,Type,PID,ProcessName,StartType,BinaryPath,AccountName,
-		ErrorControl,Description,Privileges,Triggers,Dependencies,ControlsAccepted,SID,SidType
+		Name, DisplayName, State, Type, PID, ProcessName, StartType, BinaryPath, AccountName,
+		ErrorControl, Description, Privileges, Triggers, Dependencies, ControlsAccepted, SID, SidType
 	};
 
 	void Refresh();

@@ -21,88 +21,88 @@ CProcessInlineHookTable::CProcessInlineHookTable(BarInfo& bars, TableInfo& table
 CString CProcessInlineHookTable::TypeToString(HookType type) {
 	switch (type)
 	{
-		case HookType::x64HookType1:
-			return L"x64HookType1";
-		case HookType::x64HookType2:
-			return L"x64HookType2";
-		case HookType::x64HookType3:
-			return L"x64HookType3";
-		case HookType::x64HookType4:
-			return L"x64HookType4";
-		case HookType::x86HookType1:
-			return L"x86HookType1";
-		case HookType::x86HookType2:
-			return L"x86HookType2";
-		case HookType::x86HookType3:
-			return L"x86HookType3";
-		case HookType::x86HookType6:
-			return L"x86HookType6";
-		default:
-			return L"Unknown Type";
+	case HookType::x64HookType1:
+		return L"x64HookType1";
+	case HookType::x64HookType2:
+		return L"x64HookType2";
+	case HookType::x64HookType3:
+		return L"x64HookType3";
+	case HookType::x64HookType4:
+		return L"x64HookType4";
+	case HookType::x86HookType1:
+		return L"x86HookType1";
+	case HookType::x86HookType2:
+		return L"x86HookType2";
+	case HookType::x86HookType3:
+		return L"x86HookType3";
+	case HookType::x86HookType6:
+		return L"x86HookType6";
+	default:
+		return L"Unknown Type";
 	}
 }
 
 int CProcessInlineHookTable::ParseTableEntry(CString& s, char& mask, int& select, InlineHookInfo& info, int column) {
 	switch (static_cast<Column>(column))
 	{
-		case Column::HookObject:
-			s = info.Name.c_str();
-			break;
+	case Column::HookObject:
+		s = info.Name.c_str();
+		break;
 
-		case Column::HookType:
-			s = TypeToString(info.Type);
-			break;
+	case Column::HookType:
+		s = TypeToString(info.Type);
+		break;
 
-		case Column::Address:
-		{
-			auto& symbols = SymbolManager::Get();
-			DWORD64 offset = 0;
-			auto symbol = symbols.GetSymbolFromAddress(m_Pid, info.Address, &offset);
-			CStringA text;
-			if (symbol) {
-				auto sym = symbol->GetSymbolInfo();
-				if (offset != 0) {
-					text.Format("%s!%s+0x%X", symbol->ModuleInfo.ModuleName, sym->Name, (DWORD)offset);
-				}
-				else
-					text.Format("%s!%s", symbol->ModuleInfo.ModuleName, sym->Name);
-				std::string details = text.GetString();
-				std::wstring wdetails = Helpers::StringToWstring(details);
-				s.Format(L"0x%p (%s)", info.Address, wdetails.c_str());
+	case Column::Address:
+	{
+		auto& symbols = SymbolManager::Get();
+		DWORD64 offset = 0;
+		auto symbol = symbols.GetSymbolFromAddress(m_Pid, info.Address, &offset);
+		CStringA text;
+		if (symbol) {
+			auto sym = symbol->GetSymbolInfo();
+			if (offset != 0) {
+				text.Format("%s!%s+0x%X", symbol->ModuleInfo.ModuleName, sym->Name, (DWORD)offset);
 			}
 			else
-				s.Format(L"0x%p", info.Address);
-			break;
+				text.Format("%s!%s", symbol->ModuleInfo.ModuleName, sym->Name);
+			std::string details = text.GetString();
+			std::wstring wdetails = Helpers::StringToWstring(details);
+			s.Format(L"0x%p (%s)", info.Address, wdetails.c_str());
 		}
+		else
+			s.Format(L"0x%p", info.Address);
+		break;
+	}
 
-		case Column::Module:
-			s = info.TargetModule.c_str();
-			break;
+	case Column::Module:
+		s = info.TargetModule.c_str();
+		break;
 
-		case Column::TargetAddress:
-		{
-			auto& symbols = SymbolManager::Get();
-			DWORD64 offset = 0;
-			auto symbol = symbols.GetSymbolFromAddress(m_Pid, info.TargetAddress, &offset);
-			CStringA text;
-			if (symbol) {
-				auto sym = symbol->GetSymbolInfo();
-				if (offset != 0) {
-					text.Format("%s!%s+0x%X", symbol->ModuleInfo.ModuleName, sym->Name, (DWORD)offset);
-				}
-				else
-					text.Format("%s!%s", symbol->ModuleInfo.ModuleName, sym->Name);
-				std::string details = text.GetString();
-				std::wstring wdetails = Helpers::StringToWstring(details);
-				s.Format(L"0x%p (%s)", info.TargetAddress, wdetails.c_str());
+	case Column::TargetAddress:
+	{
+		auto& symbols = SymbolManager::Get();
+		DWORD64 offset = 0;
+		auto symbol = symbols.GetSymbolFromAddress(m_Pid, info.TargetAddress, &offset);
+		CStringA text;
+		if (symbol) {
+			auto sym = symbol->GetSymbolInfo();
+			if (offset != 0) {
+				text.Format("%s!%s+0x%X", symbol->ModuleInfo.ModuleName, sym->Name, (DWORD)offset);
 			}
 			else
-				s.Format(L"0x%p", info.TargetAddress);
-			break;
+				text.Format("%s!%s", symbol->ModuleInfo.ModuleName, sym->Name);
+			std::string details = text.GetString();
+			std::wstring wdetails = Helpers::StringToWstring(details);
+			s.Format(L"0x%p (%s)", info.TargetAddress, wdetails.c_str());
 		}
+		else
+			s.Format(L"0x%p", info.TargetAddress);
+		break;
+	}
 
-		default:
-			break;
+	default:
+		break;
 	}
 	return s.GetLength();
 }
@@ -295,7 +295,7 @@ void CProcessInlineHookTable::CheckX86HookType1(cs_insn* insn, size_t j, size_t 
 	}
 
 	auto m = GetModuleByAddress(insn[j].address);
-	if (isCheckCode && m!=nullptr) {
+	if (isCheckCode && m != nullptr) {
 		if (!CheckCode(insn[j].address, 5, (ULONG_PTR)m->ImageBase,
 			m->ModuleSize, pMem))
 			return;
@@ -313,7 +313,7 @@ void CProcessInlineHookTable::CheckX86HookType1(cs_insn* insn, size_t j, size_t 
 	if (m != nullptr) {
 		info.TargetModule = m->Path;
 	}
-	
+
 	m_Table.data.info.push_back(info);
 }
 
@@ -496,7 +496,7 @@ void CProcessInlineHookTable::CheckX86HookType6(cs_insn* insn, size_t j, size_t 
 
 void CProcessInlineHookTable::CheckInlineHook(uint8_t* code, size_t codeSize,
 	uint64_t address, ULONG_PTR moduleBase,
-	SIZE_T moduleSize, bool isX64Module, bool isCheckCode, PBYTE pMem){
+	SIZE_T moduleSize, bool isX64Module, bool isCheckCode, PBYTE pMem) {
 	ULONG_PTR startAddr = (ULONG_PTR)code;
 	ULONG_PTR maxSearchAddr = startAddr + codeSize;
 	size_t count = 0;
@@ -825,7 +825,7 @@ void CProcessInlineHookTable::Refresh() {
 			}
 
 			CheckInlineHook(code, size, address,
-				moduleBase, moduleSize, isX64Module,isCheckCode,(PBYTE)local_image_base);
+				moduleBase, moduleSize, isX64Module, isCheckCode, (PBYTE)local_image_base);
 
 			if (isCheckCode) {
 				if (local_image_base != nullptr) {
@@ -1092,7 +1092,7 @@ void CProcessInlineHookTable::CheckX64HookType4(cs_insn* insn, size_t j, size_t 
 		info.CanRestore = TRUE;
 	}
 
-	
+
 	info.Name = L"Unknown";
 	if (m != nullptr)
 		info.Name = m->Name;
@@ -1207,7 +1207,7 @@ bool CProcessInlineHookTable::CheckCode(ULONG_PTR addr, SIZE_T size, ULONG_PTR i
 	} while (false);
 	if (nullptr != code)
 		VirtualFree(code, 0, MEM_RELEASE);
-	
+
 	return isHooked;
 }
 

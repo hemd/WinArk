@@ -1,7 +1,7 @@
 #pragma once
 
 struct ComHelper {
-	template<typename TCollection,typename TItem>
+	template<typename TCollection, typename TItem>
 	static void DoForeach(TCollection* coll, std::function<void(TItem*)> f) {
 		LONG count;
 		coll->get_Count(&count);

@@ -187,17 +187,17 @@ bool ImportsHandling::AddNotFoundApiToModuleList(const ImportThunk* pApiNotFound
 		return false;
 	}
 
-	import.m_Suspect = true;
-	import.m_Valid = false;
-	import.m_VA = pApiNotFound->m_VA;
-	import.m_RVA = rva;
-	import.m_ApiAddressVA = pApiNotFound->m_ApiAddressVA;
-	import.m_Ordinal = 0;
+import.m_Suspect = true;
+import.m_Valid = false;
+import.m_VA = pApiNotFound->m_VA;
+import.m_RVA = rva;
+import.m_ApiAddressVA = pApiNotFound->m_ApiAddressVA;
+import.m_Ordinal = 0;
 
 	wcscpy_s(import.m_ModuleName, L"?");
 	strcpy_s(import.m_Name, "?");
 
-	import.m_Key = import.m_RVA;
+import.m_Key = import.m_RVA;
 	pModule->m_ThunkMap[import.m_Key] = import;
 
 
@@ -239,18 +239,18 @@ bool ImportsHandling::AddFunctionToModuleList(const ImportThunk* pApiFound)
 		return false;
 	}
 
-	import.m_Suspect = pApiFound->m_Suspect;
-	import.m_Valid = pApiFound->m_Valid;
-	import.m_VA = pApiFound->m_VA;
-	import.m_RVA = pApiFound->m_RVA;
-	import.m_ApiAddressVA = pApiFound->m_ApiAddressVA;
-	import.m_Ordinal = pApiFound->m_Ordinal;
-	import.m_Hint = pApiFound->m_Hint;
+import.m_Suspect = pApiFound->m_Suspect;
+import.m_Valid = pApiFound->m_Valid;
+import.m_VA = pApiFound->m_VA;
+import.m_RVA = pApiFound->m_RVA;
+import.m_ApiAddressVA = pApiFound->m_ApiAddressVA;
+import.m_Ordinal = pApiFound->m_Ordinal;
+import.m_Hint = pApiFound->m_Hint;
 
-	wcscpy_s(import.m_ModuleName,pApiFound->m_ModuleName);
+	wcscpy_s(import.m_ModuleName, pApiFound->m_ModuleName);
 	strcpy_s(import.m_Name, pApiFound->m_Name);
 
-	import.m_Key = import.m_RVA;
+import.m_Key = import.m_RVA;
 	pModule->m_ThunkMap[import.m_Key] = import;
 	return true;
 }
@@ -277,7 +277,7 @@ void ImportsHandling::ChangeExpandStateOfTreeNodes(UINT flag)
 	}
 }
 
-ImportsHandling::ImportsHandling(CMultiSelectTreeViewCtrl& treeImports):TreeImports(treeImports) {
+ImportsHandling::ImportsHandling(CMultiSelectTreeViewCtrl& treeImports) :TreeImports(treeImports) {
 	CDCHandle dc = CWindow(::GetDesktopWindow()).GetDC();
 	int bits = dc.GetDeviceCaps(BITSPIXEL);
 	const UINT flags = bits > 16 ? ILC_COLOR32 : (ILC_COLOR24 | ILC_MASK);

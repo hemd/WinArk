@@ -6,9 +6,9 @@
 #include "IATReferenceScan.h"
 #include <PEParser.h>
 
-class ImportRebuilder: public PEParser{
+class ImportRebuilder : public PEParser {
 public:
-	ImportRebuilder(const WCHAR* file): PEParser(file,false) {
+	ImportRebuilder(const WCHAR* file) : PEParser(file, false) {
 	}
 	bool RebuildImportTable(const WCHAR* newFilePath, std::map<DWORD_PTR, ImportModuleThunk>& moduleThunkMap);
 	void EnableOFTSupport();

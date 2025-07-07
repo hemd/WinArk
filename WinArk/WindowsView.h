@@ -12,11 +12,11 @@ public:
 	DECLARE_WND_CLASS(nullptr);
 
 	CString GetColumnText(HWND, int row, int col) const;
-	int GetRowImage(HWND, int row,int col) const;
+	int GetRowImage(HWND, int row, int col) const;
 
 	void OnActivate(bool activate);
 	void DoSort(const SortInfo* si);
-	bool IsSortable(HWND,int col) const;
+	bool IsSortable(HWND, int col) const;
 
 	//DWORD OnPrePaint(int, LPNMCUSTOMDRAW cd);
 	//DWORD OnItemPrePaint(int, LPNMCUSTOMDRAW cd);
@@ -27,7 +27,7 @@ public:
 	BEGIN_MSG_MAP(CWindowsView)
 		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_SIZE,OnSize)
+		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		NOTIFY_CODE_HANDLER(TVN_ITEMEXPANDING, OnNodeExpanding)
 		NOTIFY_CODE_HANDLER(TVN_DELETEITEM, OnNodeDeleted)
 		NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnNodeSelected)
@@ -40,7 +40,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_MAXIMIZE, OnWindowMaximize)
 		COMMAND_ID_HANDLER(ID_STATE_FLASH, OnWindowFlash)
 		COMMAND_ID_HANDLER(ID_WINDOW_RESTORE, OnWindowRestore)
-		COMMAND_ID_HANDLER(ID_WINDOW_CLOSE,OnWindowClose)
+		COMMAND_ID_HANDLER(ID_WINDOW_CLOSE, OnWindowClose)
 		/*COMMAND_ID_HANDLER(ID_VIEW_HIDDENWINDOWS, OnToggleHiddenWindows)
 		COMMAND_ID_HANDLER(ID_VIEW_EMPTYTITLEWINDOWS, OnToggleEmptyTitleWindows)
 		COMMAND_ID_HANDLER(ID_VIEW_CHILDWINDOWS, OnToggleChildWindows)*/
@@ -74,7 +74,7 @@ private:
 	CTreeItem AddNode(HWND hWnd, HTREEITEM hParent);
 	BOOL AddChildNode(HWND hWnd);
 	void AddChildWindows(std::vector<HWND>& v, HWND hParent, bool directOnly = false);
-	
+
 	void UpdateList();
 	CString GetDetails(const DataItem& item) const;
 	static CString GetWindowClassAndTitle(HWND);
@@ -83,7 +83,7 @@ private:
 	//	LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	//	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	//	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
-	
+
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

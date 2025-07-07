@@ -106,7 +106,7 @@ bool TraceManager::Start(EventCallback cb) {
 	_traceLog.ProcessTraceMode = PROCESS_TRACE_MODE_EVENT_RECORD | PROCESS_TRACE_MODE_REAL_TIME;
 	_traceLog.EventRecordCallback = [](PEVENT_RECORD record) {
 		((TraceManager*)record->UserContext)->OnEventRecord(record);
-	};
+		};
 	_hTrace = ::OpenTrace(&_traceLog);
 	if (!_hTrace)
 		return false;
@@ -114,7 +114,7 @@ bool TraceManager::Start(EventCallback cb) {
 	// create a dedicted thread to process the trace
 	_hProcessThread.reset(::CreateThread(nullptr, 0, [](auto param) {
 		return ((TraceManager*)param)->Run();
-		},this,0,nullptr));
+		}, this, 0, nullptr));
 
 	::SetThreadPriority(_hProcessThread.get(), THREAD_PRIORITY_HIGHEST);
 	return true;
@@ -194,24 +194,24 @@ bool TraceManager::ParseProcessStartStop(EventData* data) {
 
 	switch (data->GetEventDescriptor().Opcode)
 	{
-		case 1:	// process created
-		{
-			auto prop = data->GetProperty(L"ImageFileName");
-			if (prop) {
-				auto name = prop->GetAnsiString();
-				if (name) {
-					std::wstring pname;
-					pname.assign(name, name + strlen(name));
-					AddProcessName(data->GetProperty(L"ProcessId")->GetValue<DWORD>(), pname);
-					assert(!pname.empty());
-				}
+	case 1:	// process created
+	{
+		auto prop = data->GetProperty(L"ImageFileName");
+		if (prop) {
+			auto name = prop->GetAnsiString();
+			if (name) {
+				std::wstring pname;
+				pname.assign(name, name + strlen(name));
+				AddProcessName(data->GetProperty(L"ProcessId")->GetValue<DWORD>(), pname);
+				assert(!pname.empty());
 			}
-			break;
 		}
+		break;
+	}
 
-		case 2: // process end
-			RemoveProcessName(data->GetProcessId());
-			break;
+	case 2: // process end
+		RemoveProcessName(data->GetProcessId());
+		break;
 	}
 
 	return true;
@@ -250,7 +250,7 @@ int TraceManager::UpdateEventConfig() {
 		}
 	}
 	error = ::TraceSetInformation(_handle, TraceStackTracingInfo, stacks.data(), (ULONG)stacks.size() * sizeof(CLASSIC_EVENT_ID));
-	
+
 	return error;
 }
 
@@ -351,7 +351,7 @@ void TraceManager::HandleNoProcessId(EventData* data) {
 			data->SetProcessName(GetProcessImageById(pid));
 		}
 		else if (tid) {
-			wil::unique_handle hThread(::OpenThread(THREAD_QUERY_LIMITED_INFORMATION,FALSE, tid));
+			wil::unique_handle hThread(::OpenThread(THREAD_QUERY_LIMITED_INFORMATION, FALSE, tid));
 			if (hThread) {
 				auto pid = ::GetProcessIdOfThread(hThread.get());
 				if (pid) {
@@ -499,7 +499,7 @@ bool TraceManager::Start(EventCallback cb, DWORD flags) {
 	_traceLog.ProcessTraceMode = PROCESS_TRACE_MODE_EVENT_RECORD | PROCESS_TRACE_MODE_REAL_TIME;
 	_traceLog.EventRecordCallback = [](PEVENT_RECORD record) {
 		((TraceManager*)record->UserContext)->OnEventRecord(record);
-	};
+		};
 	_hTrace = ::OpenTrace(&_traceLog);
 	if (!_hTrace)
 		return false;

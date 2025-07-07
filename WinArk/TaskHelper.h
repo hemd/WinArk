@@ -2,7 +2,7 @@
 
 struct TaskSchedSvc {
 	HRESULT Init(PCWSTR machineName = nullptr, PCWSTR userName = nullptr,
-		PCWSTR domain = nullptr,PCWSTR password = nullptr);
+		PCWSTR domain = nullptr, PCWSTR password = nullptr);
 
 	ITaskService* operator->() const {
 		return _svc.p;

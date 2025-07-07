@@ -21,35 +21,35 @@
 #define REGISTER_BITMAP_EBP     0x00000040
 
 typedef struct _ANALYZER {
-    // 解码信息
-    struct {
-        PUCHAR Address;
-        ZyanUSize Length;
-        ZydisDecodedInstruction Instruction;
-        ZydisDecodedOperand Operands[ZYDIS_MAX_OPERAND_COUNT];
-    }Decoded;
-    // 编码信息
-    struct {
-        PUCHAR Address;
-        ZyanUSize Length;
-        ZydisEncoderRequest Request;
-    }Encoder;
-    struct {
-        ULONG Flags;
-        ULONG Index;
-        PUCHAR Address;
-    }Repair;
+	// 解码信息
+	struct {
+		PUCHAR Address;
+		ZyanUSize Length;
+		ZydisDecodedInstruction Instruction;
+		ZydisDecodedOperand Operands[ZYDIS_MAX_OPERAND_COUNT];
+	}Decoded;
+	// 编码信息
+	struct {
+		PUCHAR Address;
+		ZyanUSize Length;
+		ZydisEncoderRequest Request;
+	}Encoder;
+	struct {
+		ULONG Flags;
+		ULONG Index;
+		PUCHAR Address;
+	}Repair;
 }ANALYZER, * PANALYZER;
 
 typedef PVOID(NTAPI* REPAIR_CALLBACK)(_In_ ULONG Flags,
-    _In_opt_ PVOID Address);
+	_In_opt_ PVOID Address);
 
 PVOID Reflector(_In_ PUCHAR Address,
-    _In_ ULONG Length,
-    _In_opt_ REPAIR_CALLBACK Callback);
+	_In_ ULONG Length,
+	_In_opt_ REPAIR_CALLBACK Callback);
 
-PUCHAR ReflectCode(_In_ PUCHAR Address, _In_ ULONG Length, 
-    _In_ PUCHAR pTrampoline, _In_ ULONG Size);
+PUCHAR ReflectCode(_In_ PUCHAR Address, _In_ ULONG Length,
+	_In_ PUCHAR pTrampoline, _In_ ULONG Size);
 
 ULONG GetAnalyzerCount(_In_ PUCHAR Address, _In_ ULONG Length);
 
@@ -60,10 +60,10 @@ VOID BuildAllRepairInfo(_In_ PANALYZER pAnalyzers, _In_ ULONG Count);
 NTSTATUS BuildBranchType(_In_ PANALYZER Analyzer);
 
 NTSTATUS BuildBranchAnalyzerId(_In_ PANALYZER pAnalyzers,
-    _In_ ULONG Count, _In_ PANALYZER pAnalyzer);
+	_In_ ULONG Count, _In_ PANALYZER pAnalyzer);
 
 NTSTATUS BuildFirstProcedure(_In_ PUCHAR Procedure, _In_ PANALYZER pAnalyzers,
-    _In_ ULONG Count, _In_opt_ REPAIR_CALLBACK Callback);
+	_In_ ULONG Count, _In_opt_ REPAIR_CALLBACK Callback);
 
 PUCHAR BuildTruncationInstruction(_In_ PANALYZER pAnalyzer);
 
@@ -76,7 +76,7 @@ ZydisRegister SelectIdleRegister(_In_ PANALYZER pAnalyzer);
 ULONG CreateRegisterBitmap(_In_ PANALYZER pAnalyzer);
 
 PUCHAR BuildInstructionFromRequest(_In_ PUCHAR pPointer,
-    _In_ ULONG Count, _In_ ZydisEncoderRequest* Requests);
+	_In_ ULONG Count, _In_ ZydisEncoderRequest* Requests);
 
 NTSTATUS BuildSecondProcedure(_In_ PANALYZER pAnalyzers, _In_ ULONG Count);
 

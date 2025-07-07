@@ -18,7 +18,7 @@ m_Items{
 	ItemData(RowType::HVCIStatus,L"HVCI Status",ItemDataFlags::Const | ItemDataFlags::Special),
 	ItemData(RowType::Vendor,L"Processor Vendor",ItemDataFlags::Const | ItemDataFlags::Special),
 	ItemData(RowType::Hypervisor,L"Hypervisor",ItemDataFlags::Const | ItemDataFlags::Special),
-	}
+}
 {
 	SYSTEM_INFO info;
 	GetSystemInfo(&info);
@@ -35,9 +35,9 @@ LRESULT CSysInfoView::OnCreate(UINT, WPARAM, LPARAM, BOOL&) {
 	m_BasicalSysInfo = SystemInformation::GetBasicSystemInfo();
 	int count = (int)m_Items.size();
 	m_List.SetItemCount(count);
-	
+
 	Refresh();
-	
+
 	return 0;
 }
 
@@ -134,7 +134,7 @@ CString CSysInfoView::GetColumnText(HWND, int row, int col) const {
 			L"{00000000-0000-0000-0000-000000000000}",
 			nullptr, 0);
 		if (GetLastError() == ERROR_INVALID_FUNCTION) {
-			text =  L"Legacy";
+			text = L"Legacy";
 		}
 		else {
 			text = L"UEFI";
@@ -162,7 +162,7 @@ CString CSysInfoView::GetColumnText(HWND, int row, int col) const {
 		SystemInformation::GetCodeIntegrityInformation(&kmci, &strict, &ium);
 		if (kmci) {
 			text += L"KMCI | ";
-			if(strict)
+			if (strict)
 				text += L"Strict Mode | ";
 			if (ium)
 				text += L"IUM";

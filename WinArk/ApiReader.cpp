@@ -41,7 +41,7 @@ void ApiReader::ParseModuleWithMapping(ModuleInfo* pModule) {
 	ParseExportTable(pModule, true, true);
 }
 
-bool ApiReader::ParseExportTable(ModuleInfo* pModule,bool isMapping,bool ownProcess) {
+bool ApiReader::ParseExportTable(ModuleInfo* pModule, bool isMapping, bool ownProcess) {
 	if (isMapping) {
 		PEParser parser(pModule->_fullPath);
 		auto exports = parser.GetExports();
@@ -60,7 +60,7 @@ bool ApiReader::ParseExportTable(ModuleInfo* pModule,bool isMapping,bool ownProc
 			}
 		}
 	}
-	else if(!ownProcess) {
+	else if (!ownProcess) {
 		BYTE* pPE = nullptr;
 		pPE = new BYTE[pModule->_modBaseSize];
 		if (!ReadMemoryFromProcess(pModule->_modBaseAddr, pModule->_modBaseSize, pPE)) {
@@ -74,9 +74,9 @@ bool ApiReader::ParseExportTable(ModuleInfo* pModule,bool isMapping,bool ownProc
 			if (!symbol.IsForward) {
 				if (symbol.HasName)
 					AddApi(symbol.Name.c_str(), symbol.Hint, symbol.Ordinal,
-						symbol.Address + pModule->_modBaseAddr, symbol.Address,  false, pModule);
+						symbol.Address + pModule->_modBaseAddr, symbol.Address, false, pModule);
 				else {
-					AddApiWithoutName(symbol.Ordinal, symbol.Address + pModule->_modBaseAddr, symbol.Address,  false, pModule);
+					AddApiWithoutName(symbol.Ordinal, symbol.Address + pModule->_modBaseAddr, symbol.Address, false, pModule);
 				}
 			}
 			else {
@@ -211,7 +211,7 @@ void ApiReader::FindApiInProcess(ModuleInfo* pModule, char* pSearchName, WORD or
 			}
 		}
 	}
-	
+
 
 	delete[] pPE;
 }
@@ -315,7 +315,7 @@ bool ApiReader::AddModuleToModuleList(const WCHAR* pModuleName, DWORD_PTR firstT
 	return true;
 }
 
-bool ApiReader::AddFunctionToModuleList(ApiInfo* pApiFound, DWORD_PTR va, DWORD_PTR rva, 
+bool ApiReader::AddFunctionToModuleList(ApiInfo* pApiFound, DWORD_PTR va, DWORD_PTR rva,
 	WORD ordinal, bool valid, bool suspect)
 {
 	ImportThunk thunk;
@@ -475,7 +475,7 @@ ApiInfo* ApiReader::GetScoredApi(std::unordered_map<DWORD_PTR, ApiInfo*>::iterat
 	if (hasPrio2Dll)
 		scoreNeeded++;
 
-	for (size_t i = 0; i < countDuplicates; i++,iter++) {
+	for (size_t i = 0; i < countDuplicates; i++, iter++) {
 		pFoundApi = iter->second;
 		scoreValue = 0;
 
@@ -555,7 +555,7 @@ bool ApiReader::IsApiAddressValid(DWORD_PTR virtualAddress) {
 	return _apiMap.count(virtualAddress) > 0;
 }
 
-ApiInfo* ApiReader::GetApiByVirtualAddress(DWORD_PTR virtualAddress, bool* pIsSuspect){
+ApiInfo* ApiReader::GetApiByVirtualAddress(DWORD_PTR virtualAddress, bool* pIsSuspect) {
 	std::unordered_map<DWORD_PTR, ApiInfo*>::iterator iter;
 	size_t i = 0;
 	size_t countDuplicates = _apiMap.count(virtualAddress);
@@ -668,7 +668,7 @@ bool ApiReader::IsInvalidMemoryForIAT(DWORD_PTR address)
 		return false;
 	}
 
-	if(mbi.State == MEM_COMMIT && IsPageAccessable(mbi.Protect))
+	if (mbi.State == MEM_COMMIT && IsPageAccessable(mbi.Protect))
 		return false;
 
 	return true;
@@ -744,10 +744,10 @@ void ApiReader::ParseIAT(DWORD_PTR iat, BYTE* pIAT, SIZE_T size) {
 		}
 	}
 
-	
+
 }
 
-void ApiReader::AddApi(const char* pName, WORD hint, WORD ordinal, 
+void ApiReader::AddApi(const char* pName, WORD hint, WORD ordinal,
 	DWORD_PTR va, DWORD_PTR rva, bool isForward, ModuleInfo* pInfo)
 {
 	ApiInfo* pApiInfo = new ApiInfo();
@@ -779,7 +779,7 @@ void ApiReader::AddApiWithoutName(WORD ordinal, DWORD_PTR va, DWORD_PTR rva, boo
 bool ApiReader::IsApiForwarded(DWORD_PTR rva, PIMAGE_NT_HEADERS pNtHeader) {
 	DWORD exportRVA = pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
 	DWORD size = pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].Size;
-	if((rva > exportRVA) && (rva < exportRVA + size)) {
+	if ((rva > exportRVA) && (rva < exportRVA + size)) {
 		return true;
 	}
 	else {

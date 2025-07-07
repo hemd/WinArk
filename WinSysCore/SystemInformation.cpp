@@ -63,7 +63,7 @@ uint64_t SystemInformation::GetBootTime() {
 	static int64_t time = 0;
 	if (time == 0) {
 		SYSTEM_TIMEOFDAY_INFORMATION info;
-		if(NT_SUCCESS(::NtQuerySystemInformation(SystemTimeOfDayInformation,&info,sizeof(info),nullptr)))
+		if (NT_SUCCESS(::NtQuerySystemInformation(SystemTimeOfDayInformation, &info, sizeof(info), nullptr)))
 			time = info.BootTime.QuadPart;
 	}
 	return time;
@@ -87,7 +87,7 @@ std::string SystemInformation::GetCpuBrand() {
 }
 
 BOOL SystemInformation::GetCodeIntegrityInformation(PBOOLEAN pbKMCI, PBOOLEAN pbStrictMode,
-	PBOOLEAN pbIUM){
+	PBOOLEAN pbIUM) {
 	CodeIntegrityInformation info;
 	info.Length = sizeof(info);
 	ULONG len;
@@ -108,6 +108,6 @@ BOOL SystemInformation::GetCodeIntegrityInformation(PBOOLEAN pbKMCI, PBOOLEAN pb
 		}
 	}
 
-	
+
 	return TRUE;
 }

@@ -28,7 +28,7 @@ LRESULT CMiscView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	for (auto& col : columns) {
 		m_TabCtrl.InsertItem(i++, col.Name);
 	}
-	
+
 	InitLogonSessionsView();
 	InitBypassDectectView();
 	InitSysInfoView();
@@ -68,25 +68,25 @@ LRESULT CMiscView::OnTcnSelChange(int, LPNMHDR hdr, BOOL&) {
 	}
 
 	switch (static_cast<TabColumn>(index)) {
-		case TabColumn::LogonSessions:
-			m_pLogonSessionView->ShowWindow(SW_SHOW);
-			break;
+	case TabColumn::LogonSessions:
+		m_pLogonSessionView->ShowWindow(SW_SHOW);
+		break;
 
-		case TabColumn::BypassDetect:
-			m_BypassView.ShowWindow(SW_SHOW);
-			break;
+	case TabColumn::BypassDetect:
+		m_BypassView.ShowWindow(SW_SHOW);
+		break;
 
-		case TabColumn::SystemInformation:
-			m_SysInfoView->ShowWindow(SW_SHOW);
-			break;
+	case TabColumn::SystemInformation:
+		m_SysInfoView->ShowWindow(SW_SHOW);
+		break;
 
-		case TabColumn::TaskScheduler:
-			m_TaskSchedView.ShowWindow(SW_SHOW);
-			break;
+	case TabColumn::TaskScheduler:
+		m_TaskSchedView.ShowWindow(SW_SHOW);
+		break;
 
-		case TabColumn::SysUserInfos:
-			m_pSysUserInfoView->ShowWindow(SW_SHOW);
-			break;
+	case TabColumn::SysUserInfos:
+		m_pSysUserInfoView->ShowWindow(SW_SHOW);
+		break;
 	}
 	_index = index;
 	::PostMessage(m_hWnd, WM_SIZE, 0, 0);

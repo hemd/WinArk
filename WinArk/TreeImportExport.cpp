@@ -3,12 +3,12 @@
 #include "Architecture.h"
 #include <Helpers.h>
 
-TreeImportExport::TreeImportExport(const WCHAR* pTargetXmlFile){
+TreeImportExport::TreeImportExport(const WCHAR* pTargetXmlFile) {
 	wcscpy_s(_xmlPath, pTargetXmlFile);
 }
 
-bool TreeImportExport::ExportTreeList(const std::map<DWORD_PTR, ImportModuleThunk>& moduleThunk, const std::string processName, 
-	DWORD_PTR oep, DWORD_PTR iat, DWORD iatSize){
+bool TreeImportExport::ExportTreeList(const std::map<DWORD_PTR, ImportModuleThunk>& moduleThunk, const std::string processName,
+	DWORD_PTR oep, DWORD_PTR iat, DWORD iatSize) {
 	// 定义doc对象
 	tinyxml2::XMLDocument doc;
 	// 增加xml文档声明
@@ -26,7 +26,7 @@ bool TreeImportExport::ExportTreeList(const std::map<DWORD_PTR, ImportModuleThun
 	return SaveXmlToFile(doc, _xmlPath);
 }
 
-bool TreeImportExport::ImportTreeList(std::map<DWORD_PTR, ImportModuleThunk>& moduleThunk, 
+bool TreeImportExport::ImportTreeList(std::map<DWORD_PTR, ImportModuleThunk>& moduleThunk,
 	DWORD_PTR* pOEP, DWORD_PTR* pIAT, DWORD* pSize) {
 	moduleThunk.clear();
 	*pOEP = *pIAT = 0;
@@ -65,12 +65,12 @@ void TreeImportExport::SetTargetInformation(tinyxml2::XMLElement* pRootElement, 
 	pRootElement->SetAttribute("iat_size", _xmlStringBuffer);
 }
 
-void TreeImportExport::AddModuleListToRootElement(tinyxml2::XMLElement* pRootElement, 
-	const std::map<DWORD_PTR, ImportModuleThunk>& moduleThunkMap){
-	
+void TreeImportExport::AddModuleListToRootElement(tinyxml2::XMLElement* pRootElement,
+	const std::map<DWORD_PTR, ImportModuleThunk>& moduleThunkMap) {
+
 	for (auto& moduleThunk : moduleThunkMap) {
 		const ImportModuleThunk& importModultThunk = moduleThunk.second;
-		tinyxml2::XMLElement* pModuleElement = GetModuleXmlElement(pRootElement,&importModultThunk);
+		tinyxml2::XMLElement* pModuleElement = GetModuleXmlElement(pRootElement, &importModultThunk);
 
 		for (auto& thunk : importModultThunk.m_ThunkMap) {
 			const ImportThunk& importThunk = thunk.second;
@@ -80,7 +80,7 @@ void TreeImportExport::AddModuleListToRootElement(tinyxml2::XMLElement* pRootEle
 }
 
 
-void TreeImportExport::ParseAllElementModules(tinyxml2::XMLElement* pTargetElement, 
+void TreeImportExport::ParseAllElementModules(tinyxml2::XMLElement* pTargetElement,
 	std::map<DWORD_PTR, ImportModuleThunk>& moduleThunkMap)
 {
 	ImportModuleThunk importModuleThunk;
@@ -100,7 +100,7 @@ void TreeImportExport::ParseAllElementModules(tinyxml2::XMLElement* pTargetEleme
 	}
 }
 
-void TreeImportExport::ParseAllElementImports(tinyxml2::XMLElement* pModuleElement, 
+void TreeImportExport::ParseAllElementImports(tinyxml2::XMLElement* pModuleElement,
 	ImportModuleThunk* pModuleThunk)
 {
 	ImportThunk importThunk;
@@ -138,7 +138,7 @@ void TreeImportExport::ParseAllElementImports(tinyxml2::XMLElement* pModuleEleme
 	}
 }
 
-tinyxml2::XMLElement* TreeImportExport::GetModuleXmlElement(tinyxml2::XMLElement* pParentElement, 
+tinyxml2::XMLElement* TreeImportExport::GetModuleXmlElement(tinyxml2::XMLElement* pParentElement,
 	const ImportModuleThunk* pModuleThunk)
 {
 	tinyxml2::XMLElement* pModuleElement = pParentElement->InsertNewChildElement("module");
@@ -151,9 +151,9 @@ tinyxml2::XMLElement* TreeImportExport::GetModuleXmlElement(tinyxml2::XMLElement
 	return pModuleElement;
 }
 
-tinyxml2::XMLElement* TreeImportExport::GetImportXmlElement(tinyxml2::XMLElement* pParentElement, 
+tinyxml2::XMLElement* TreeImportExport::GetImportXmlElement(tinyxml2::XMLElement* pParentElement,
 	const ImportThunk* pThunk)
-{	
+{
 	tinyxml2::XMLElement* pImportElement = nullptr;
 	if (pThunk->m_Valid) {
 		pImportElement = pParentElement->InsertNewChildElement("import_valid");
@@ -184,13 +184,13 @@ tinyxml2::XMLElement* TreeImportExport::GetImportXmlElement(tinyxml2::XMLElement
 }
 
 
-bool TreeImportExport::SaveXmlToFile(tinyxml2::XMLDocument& doc, const WCHAR* pXmlFilePath){
+bool TreeImportExport::SaveXmlToFile(tinyxml2::XMLDocument& doc, const WCHAR* pXmlFilePath) {
 	std::string xmlFilePath = Helpers::WstringToString(pXmlFilePath);
 	tinyxml2::XMLError error = doc.SaveFile(xmlFilePath.c_str());
 	return error == tinyxml2::XML_SUCCESS ? true : false;
 }
 
-bool TreeImportExport::ReadXmlFile(tinyxml2::XMLDocument& doc, const WCHAR* pXmlFilePath){
+bool TreeImportExport::ReadXmlFile(tinyxml2::XMLDocument& doc, const WCHAR* pXmlFilePath) {
 	std::string xmlFilePath = Helpers::WstringToString(pXmlFilePath);
 	tinyxml2::XMLError error = doc.LoadFile(xmlFilePath.c_str());
 	return error == tinyxml2::XML_SUCCESS ? true : false;

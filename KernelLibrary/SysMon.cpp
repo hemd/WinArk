@@ -128,7 +128,7 @@ void OnThreadNotify(_In_ HANDLE ProcessId, _In_ HANDLE ThreadId, _In_ BOOLEAN Cr
 	PushItem(&info->Entry);
 	if (Create) {
 		bool sameProcess = ProcessId == PsGetCurrentProcessId();
-		LogInfo("Thread Create: PID= %ld,TID= %ld Same process: %d\n", 
+		LogInfo("Thread Create: PID= %ld,TID= %ld Same process: %d\n",
 			ProcessId, ThreadId, sameProcess);
 	}
 	else {
@@ -148,10 +148,10 @@ void OnImageLoadNotify(_In_opt_ PUNICODE_STRING FullImageName, _In_ HANDLE Proce
 			BackupFile(FullImageName);
 		}
 		else
-			KdPrint(("[Library] Unknown Driver Load AddressEntryPoint: 0x%p\n",entryPoint));
-		
+			KdPrint(("[Library] Unknown Driver Load AddressEntryPoint: 0x%p\n", entryPoint));
+
 		// do something...
-		
+
 		if (ImageInfo->ExtendedInfoPresent) {
 			auto exinfo = CONTAINING_RECORD(ImageInfo, IMAGE_INFO_EX, ImageInfo);
 			// access FileObject
@@ -297,22 +297,22 @@ NTSTATUS OnRegistryNotify(PVOID context, PVOID arg1, PVOID arg2) {
 		//	CmCallbackReleaseKeyObjectIDEx(name);
 		//}
 		break;
-	//case RegNtPreCreateKeyEx:
-		/*auto args = (REG_CREATE_KEY_INFORMATION*)arg2;
-		if (!NT_SUCCESS(args->Status))
-			break;*/
+		//case RegNtPreCreateKeyEx:
+			/*auto args = (REG_CREATE_KEY_INFORMATION*)arg2;
+			if (!NT_SUCCESS(args->Status))
+				break;*/
 
-		/*PUNICODE_STRING name;
-		if (NT_SUCCESS(CmCallbackGetKeyObjectIDEx(&g_SysMonGlobals.RegCookie, args->Object,
-			nullptr, &name, 0))) {
-			if (::wcsncmp(name->Buffer, machine, ARRAYSIZE(machine) - 1) == 0) {
-				auto preInfo = (REG_CREATE_KEY_INFORMATION*)args->PreInformation;
-				NT_ASSERT(preInfo);
-				KdPrint(("%wZ", preInfo->CompleteName));
-			}
-			CmCallbackReleaseKeyObjectIDEx(name);
-		}*/
-		//break;
+				/*PUNICODE_STRING name;
+				if (NT_SUCCESS(CmCallbackGetKeyObjectIDEx(&g_SysMonGlobals.RegCookie, args->Object,
+					nullptr, &name, 0))) {
+					if (::wcsncmp(name->Buffer, machine, ARRAYSIZE(machine) - 1) == 0) {
+						auto preInfo = (REG_CREATE_KEY_INFORMATION*)args->PreInformation;
+						NT_ASSERT(preInfo);
+						KdPrint(("%wZ", preInfo->CompleteName));
+					}
+					CmCallbackReleaseKeyObjectIDEx(name);
+				}*/
+				//break;
 	}
 	return STATUS_SUCCESS;
 }
@@ -389,14 +389,14 @@ PEX_CALLBACK_ROUTINE_BLOCK ExReferenceCallBackBlock(
 	OldRef = ExFastReference(&Callback->RoutineBlock);
 	if (OldRef.Value == 0)
 		return nullptr;
-	
+
 	if (ExFastRefObjectNull(OldRef))
 		return nullptr;
 
 	if (!(OldRef.RefCnt & MAX_FAST_REFS)) {
 
 		KeEnterCriticalRegion();
-		
+
 		CallbackBlock = (PEX_CALLBACK_ROUTINE_BLOCK)ExFastRefGetObject(Callback->RoutineBlock);
 		if (CallbackBlock && !ExAcquireRundownProtection(&CallbackBlock->RundownProtect)) {
 			CallbackBlock = nullptr;
@@ -483,8 +483,8 @@ VOID ExDereferenceCallBackBlock(
 	}
 }
 
-bool EnumSystemNotify(PEX_CALLBACK callback,ULONG count,KernelCallbackInfo* info) {
-	if (!callback) 
+bool EnumSystemNotify(PEX_CALLBACK callback, ULONG count, KernelCallbackInfo* info) {
+	if (!callback)
 		return false;
 
 	KdPrint(("Count: %d\n", count));
@@ -499,7 +499,7 @@ bool EnumSystemNotify(PEX_CALLBACK callback,ULONG count,KernelCallbackInfo* info
 	for (ULONG i = 0; i < Max; i++) {
 		if (j == count)
 			break;
-		if (!MmIsAddressValid(callback)) 
+		if (!MmIsAddressValid(callback))
 			break;
 		auto block = ExReferenceCallBackBlock(callback);
 		if (block != nullptr) {
@@ -515,7 +515,7 @@ bool EnumSystemNotify(PEX_CALLBACK callback,ULONG count,KernelCallbackInfo* info
 
 
 
-bool EnumRegistryNotify(PLIST_ENTRY pListHead,CmCallbackInfo* info) {
+bool EnumRegistryNotify(PLIST_ENTRY pListHead, CmCallbackInfo* info) {
 	if (!pListHead)
 		return false;
 
@@ -535,7 +535,7 @@ bool EnumRegistryNotify(PLIST_ENTRY pListHead,CmCallbackInfo* info) {
 	return true;
 }
 
-bool EnumObCallbackNotify(ULONG callbackListOffset,ObCallbackInfo* info) {
+bool EnumObCallbackNotify(ULONG callbackListOffset, ObCallbackInfo* info) {
 	PLIST_ENTRY callbackListHead = nullptr;
 	PLIST_ENTRY nextEntry = nullptr;
 	POB_CALLBACK_ENTRY callbackEntry = nullptr;
@@ -549,7 +549,7 @@ bool EnumObCallbackNotify(ULONG callbackListOffset,ObCallbackInfo* info) {
 
 	callbackListHead = (PLIST_ENTRY)((PUCHAR)*PsThreadType + callbackListOffset);
 	nextEntry = callbackListHead->Flink;
-	
+
 	while (nextEntry != callbackListHead) {
 		callbackEntry = CONTAINING_RECORD(nextEntry, OB_CALLBACK_ENTRY, CallbackListEntry);
 		if (ExAcquireRundownProtection(&callbackEntry->RundownReference)) {
@@ -667,7 +667,7 @@ LONG GetObCallbackCount(ULONG callbackListOffset) {
 
 NTSTATUS BackupFile(_In_ PUNICODE_STRING FileName) {
 	NTSTATUS status = STATUS_SUCCESS;
-	FileManager mgrS,mgrT;
+	FileManager mgrS, mgrT;
 	void* buffer = nullptr;
 	IO_STATUS_BLOCK ioStatus;
 
@@ -693,10 +693,10 @@ NTSTATUS BackupFile(_In_ PUNICODE_STRING FileName) {
 		}
 		USHORT len = wcslen(sysName);
 		const WCHAR backupStream[] = L"_backup.sys";
-		
-		targetFileName.MaximumLength = g_BackupDir.Length + len * sizeof(WCHAR)+ sizeof(backupStream);
+
+		targetFileName.MaximumLength = g_BackupDir.Length + len * sizeof(WCHAR) + sizeof(backupStream);
 		targetFileName.Buffer = (WCHAR*)ExAllocatePoolWithTag(PagedPool, targetFileName.MaximumLength, 'kuab');
-		if (targetFileName.Buffer == nullptr){
+		if (targetFileName.Buffer == nullptr) {
 			status = STATUS_INSUFFICIENT_RESOURCES;
 			break;
 		}
@@ -751,7 +751,7 @@ NTSTATUS BackupFile(_In_ PUNICODE_STRING FileName) {
 
 	if (buffer)
 		ExFreePool(buffer);
-	
+
 	return status;
 }
 
@@ -796,60 +796,60 @@ NTSTATUS RemoveSystemNotify(_In_ PVOID context) {
 	auto notify = (NotifyData*)context;
 	NTSTATUS status = STATUS_SUCCESS;
 	switch (notify->Type)
-	{	
-		case NotifyType::LoadImageNotify:
-		{
-			status = PsRemoveLoadImageNotifyRoutine(reinterpret_cast<PLOAD_IMAGE_NOTIFY_ROUTINE>(notify->Address));
-			if (!NT_SUCCESS(status)) {
-				LogError("failed to remove image load callbacks (status=%08X)\n", status);
-			}
-			break;
+	{
+	case NotifyType::LoadImageNotify:
+	{
+		status = PsRemoveLoadImageNotifyRoutine(reinterpret_cast<PLOAD_IMAGE_NOTIFY_ROUTINE>(notify->Address));
+		if (!NT_SUCCESS(status)) {
+			LogError("failed to remove image load callbacks (status=%08X)\n", status);
 		}
-			
-		case NotifyType::CreateProcessNotify:
-		{
-			// PsSetCreateProcessNotifyRoutineEx2
-			PPsSetCreateProcessNotifyRoutineEx2 pPsSetCreateProcessNotifyRoutineEx2 = nullptr;
-			pPsSetCreateProcessNotifyRoutineEx2 = (PPsSetCreateProcessNotifyRoutineEx2)khook::GetApiAddress(L"PsSetCreateProcessNotifyRoutineEx2");
-			if (nullptr != pPsSetCreateProcessNotifyRoutineEx2) {
-				status = pPsSetCreateProcessNotifyRoutineEx2(0, notify->Address, TRUE);
-			}
-			else {
-				status = STATUS_PROCEDURE_NOT_FOUND;
-			}
-			if (status == STATUS_PROCEDURE_NOT_FOUND||!NT_SUCCESS(status)) {
-				status = PsSetCreateProcessNotifyRoutineEx(reinterpret_cast<PCREATE_PROCESS_NOTIFY_ROUTINE_EX>(notify->Address), TRUE);
-			}
-			if (status == STATUS_PROCEDURE_NOT_FOUND) {
-				status = PsSetCreateProcessNotifyRoutine(reinterpret_cast<PCREATE_PROCESS_NOTIFY_ROUTINE>(notify->Address), TRUE);
-			}
-			break;
-		}
-
-		case NotifyType::CreateThreadNotify:
-		{
-			status = PsRemoveCreateThreadNotifyRoutine(reinterpret_cast<PCREATE_THREAD_NOTIFY_ROUTINE>(notify->Address));
-			break;
-		}
-
-		case NotifyType::RegistryNotify:
-		{
-			status = CmUnRegisterCallback(notify->Cookie);
-			break;
-		}
-		default:
-			break;
+		break;
 	}
-	
+
+	case NotifyType::CreateProcessNotify:
+	{
+		// PsSetCreateProcessNotifyRoutineEx2
+		PPsSetCreateProcessNotifyRoutineEx2 pPsSetCreateProcessNotifyRoutineEx2 = nullptr;
+		pPsSetCreateProcessNotifyRoutineEx2 = (PPsSetCreateProcessNotifyRoutineEx2)khook::GetApiAddress(L"PsSetCreateProcessNotifyRoutineEx2");
+		if (nullptr != pPsSetCreateProcessNotifyRoutineEx2) {
+			status = pPsSetCreateProcessNotifyRoutineEx2(0, notify->Address, TRUE);
+		}
+		else {
+			status = STATUS_PROCEDURE_NOT_FOUND;
+		}
+		if (status == STATUS_PROCEDURE_NOT_FOUND || !NT_SUCCESS(status)) {
+			status = PsSetCreateProcessNotifyRoutineEx(reinterpret_cast<PCREATE_PROCESS_NOTIFY_ROUTINE_EX>(notify->Address), TRUE);
+		}
+		if (status == STATUS_PROCEDURE_NOT_FOUND) {
+			status = PsSetCreateProcessNotifyRoutine(reinterpret_cast<PCREATE_PROCESS_NOTIFY_ROUTINE>(notify->Address), TRUE);
+		}
+		break;
+	}
+
+	case NotifyType::CreateThreadNotify:
+	{
+		status = PsRemoveCreateThreadNotifyRoutine(reinterpret_cast<PCREATE_THREAD_NOTIFY_ROUTINE>(notify->Address));
+		break;
+	}
+
+	case NotifyType::RegistryNotify:
+	{
+		status = CmUnRegisterCallback(notify->Cookie);
+		break;
+	}
+	default:
+		break;
+	}
+
 	return status;
 }
 
-bool RemoveObCallbackNotify(POB_CALLBACK_ENTRY pCallbackEntry){
+bool RemoveObCallbackNotify(POB_CALLBACK_ENTRY pCallbackEntry) {
 	if (!pCallbackEntry) {
 		return false;
 	}
 	pCallbackEntry->Registration->RegistrationCount = 0;
-	bool ret =  RemoveEntryList(&pCallbackEntry->CallbackListEntry);
+	bool ret = RemoveEntryList(&pCallbackEntry->CallbackListEntry);
 	if (!ret) {
 		ObUnRegisterCallbacks(pCallbackEntry->Registration);
 	}
@@ -883,16 +883,16 @@ NTSTATUS EnumMiniFilterOperations(MiniFilterData* pData, OperationInfo* pInfo) {
 					if (pFullInfo) {
 						status = FltGetFilterInformation(ppFltList[i], FilterFullInformation, pFullInfo, size, &size);
 						if (NT_SUCCESS(status)) {
-							if (pFullInfo->FilterNameLength < sizeof(filterName)/sizeof(WCHAR)) {
+							if (pFullInfo->FilterNameLength < sizeof(filterName) / sizeof(WCHAR)) {
 								RtlCopyMemory(filterName, pFullInfo->FilterNameBuffer,
 									pFullInfo->FilterNameLength);
-								filterName[pFullInfo->FilterNameLength/sizeof(WCHAR)] = L'\0';
+								filterName[pFullInfo->FilterNameLength / sizeof(WCHAR)] = L'\0';
 							}
 							if (!_wcsicmp(filterName, name)) {
 								PFLT_OPERATION_REGISTRATION* ppOperationReg = (PFLT_OPERATION_REGISTRATION*)((PUCHAR)ppFltList[i] + offset);
 								PFLT_OPERATION_REGISTRATION pOperationReg = *ppOperationReg;
 								int j = 0;
-								for (j = 0; pOperationReg->MajorFunction != IRP_MJ_OPERATION_END; j++,pOperationReg++) {
+								for (j = 0; pOperationReg->MajorFunction != IRP_MJ_OPERATION_END; j++, pOperationReg++) {
 									pInfo[j].FilterHandle = ppFltList[i];
 									pInfo[j].Flags = pOperationReg->Flags;
 									pInfo[j].MajorFunction = pOperationReg->MajorFunction;
@@ -912,10 +912,10 @@ NTSTATUS EnumMiniFilterOperations(MiniFilterData* pData, OperationInfo* pInfo) {
 			ppFltList = nullptr;
 		}
 	}
-	if(pFullInfo!=nullptr)
+	if (pFullInfo != nullptr)
 		ExFreePool(pFullInfo);
 
-	if(ppFltList!=nullptr)
+	if (ppFltList != nullptr)
 		ExFreePoolWithTag(ppFltList, 'tsil');
 
 
@@ -1100,7 +1100,7 @@ int NTAPI HookI_MinCryptHashSearchCompare(size_t Size, PUCHAR Arg1, PUCHAR Arg2)
 			ExFreePool(hash);
 		}
 	} while (FALSE);
-	
+
 	return memcmp(Arg1, Arg2, Size);
 }
 
@@ -1125,7 +1125,7 @@ bool StopLogDriverHash() {
 	status = DetourTransactionCommit();
 	if (!NT_SUCCESS(status))
 		return false;
-	
+
 	return true;
 }
 

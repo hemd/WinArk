@@ -209,7 +209,7 @@ PUCHAR DetourSkipJmp(PUCHAR pCode, PVOID* ppGlobals) {
 
 		// First, skip over the import vector if there is one.
 		if (pCode[0] == 0xff && pCode[1] == 0x25) { // jmp [+imm32]
-			 // Looks like an import alias jump, then get the code it points to.
+			// Looks like an import alias jump, then get the code it points to.
 			PUCHAR pTarget = *(UNALIGNED PUCHAR*) & pCode[2];
 			if (DetourIsImported(pCode, pTarget)) {
 				pNew = *(UNALIGNED PUCHAR*)pTarget;
@@ -385,7 +385,7 @@ PUCHAR DetourGenJmpIndirect(PUCHAR pCode, PUCHAR* ppJmpVal) {
 
 PUCHAR DetourGenBrk(PUCHAR pCode, PUCHAR pLimit) {
 	ULONG count = pLimit - pCode;
-	Brk* pBrk = (Brk*)ExAllocatePoolWithTag(NonPagedPool, sizeof(Brk) + count,'oted');
+	Brk* pBrk = (Brk*)ExAllocatePoolWithTag(NonPagedPool, sizeof(Brk) + count, 'oted');
 	if (pBrk != nullptr) {
 		MapLockedCopyMemory(pCode, pBrk->int3, count);
 		ExFreePool(pBrk);
@@ -423,7 +423,7 @@ PUCHAR DetourSkipJmp(PUCHAR pCode, PVOID* ppGlobals) {
 
 		// First, skip over the import vector if there is one.
 		if (pCode[0] == 0xff && pCode[1] == 0x25) { // jmp [+imm32]
-			 // Looks like an import alias jump, then get the code it points to.
+			// Looks like an import alias jump, then get the code it points to.
 			PUCHAR pTarget = pCode + 6 + *(UNALIGNED INT32*) & pCode[2];
 			if (DetourIsImported(pCode, pTarget)) {
 				pNew = *(UNALIGNED PUCHAR*)pTarget;
@@ -733,7 +733,7 @@ NTSTATUS NTAPI DetourTransactionCommitEx() {
 #endif // DETOURS_X86
 
 #ifdef DETOURS_ARM
-			
+
 #endif // DETOURS_ARM
 
 #ifdef DETOURS_ARM64
@@ -770,14 +770,14 @@ NTSTATUS NTAPI DetourTransactionCommitEx() {
 				o->pTrampoline->rbCode[4], o->pTrampoline->rbCode[5],
 				o->pTrampoline->rbCode[6], o->pTrampoline->rbCode[7],
 				o->pTrampoline->rbCode[8], o->pTrampoline->rbCode[9],
-				o->pTrampoline->rbCode[10],o->pTrampoline->rbCode[11],
-				o->pTrampoline->rbCode[12],o->pTrampoline->rbCode[13],
+				o->pTrampoline->rbCode[10], o->pTrampoline->rbCode[11],
+				o->pTrampoline->rbCode[12], o->pTrampoline->rbCode[13],
 				o->pTrampoline->rbCode[14], o->pTrampoline->rbCode[15],
-				o->pTrampoline->rbCode[16], o->pTrampoline->rbCode[17], 
-				o->pTrampoline->rbCode[18], o->pTrampoline->rbCode[19], 
-				o->pTrampoline->rbCode[20], o->pTrampoline->rbCode[21], 
-				o->pTrampoline->rbCode[22], o->pTrampoline->rbCode[23], 
-				o->pTrampoline->rbCode[24], o->pTrampoline->rbCode[25], 
+				o->pTrampoline->rbCode[16], o->pTrampoline->rbCode[17],
+				o->pTrampoline->rbCode[18], o->pTrampoline->rbCode[19],
+				o->pTrampoline->rbCode[20], o->pTrampoline->rbCode[21],
+				o->pTrampoline->rbCode[22], o->pTrampoline->rbCode[23],
+				o->pTrampoline->rbCode[24], o->pTrampoline->rbCode[25],
 				o->pTrampoline->rbCode[26], o->pTrampoline->rbCode[27]);
 
 #ifdef DETOURS_IA64

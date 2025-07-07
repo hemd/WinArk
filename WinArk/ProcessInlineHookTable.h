@@ -7,8 +7,8 @@
 #include <PEParser.h>
 
 enum class HookType {
-	x64HookType1,x64HookType2,x64HookType3,x64HookType4,
-	x86HookType1,x86HookType2,x86HookType3,x86HookType6,
+	x64HookType1, x64HookType2, x64HookType3, x64HookType4,
+	x86HookType1, x86HookType2, x86HookType3, x86HookType6,
 };
 
 struct InlineHookInfo {
@@ -28,7 +28,7 @@ class CProcessInlineHookTable :
 public:
 	DECLARE_WND_CLASS_EX(NULL, CS_DBLCLKS | CS_VREDRAW | CS_HREDRAW, COLOR_WINDOW);
 
-	CProcessInlineHookTable(BarInfo& bars, TableInfo& table, DWORD pid,bool x64);
+	CProcessInlineHookTable(BarInfo& bars, TableInfo& table, DWORD pid, bool x64);
 	int ParseTableEntry(CString& s, char& mask, int& select, InlineHookInfo& info, int column);
 	bool CompareItems(const InlineHookInfo& s1, const InlineHookInfo& s2, int col, bool asc);
 
@@ -45,15 +45,15 @@ public:
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLBtnDown)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLBtnUp)
-		MESSAGE_HANDLER(WM_RBUTTONDOWN,OnRBtnDown)
+		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRBtnDown)
 		MESSAGE_HANDLER(WM_USER_STS, OnUserSts)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnWindowPosChanged)
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_SYSKEYDOWN, OnSysKeyDown)
-		COMMAND_ID_HANDLER(ID_INLINEHOOK_COPY,OnHookCopy)
+		COMMAND_ID_HANDLER(ID_INLINEHOOK_COPY, OnHookCopy)
 		COMMAND_ID_HANDLER(ID_INLINEHOOK_EXPORT, OnHookExport)
-		COMMAND_ID_HANDLER(ID_INLINEHOOK_RESTORE,OnRestore)
-		COMMAND_ID_HANDLER(ID_INLINEHOOK_REFRESH_ALL,OnRefresh)
+		COMMAND_ID_HANDLER(ID_INLINEHOOK_RESTORE, OnRestore)
+		COMMAND_ID_HANDLER(ID_INLINEHOOK_REFRESH_ALL, OnRefresh)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);

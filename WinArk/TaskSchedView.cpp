@@ -10,64 +10,64 @@ CString CTaskSchedView::GetColumnText(HWND h, int row, int col) const {
 	auto& item = m_Items[row];
 	switch (static_cast<ColumnType>(GetColumnManager(h)->GetColumnTag(col)))
 	{
-		case ColumnType::Name: return item.Name;
-		case ColumnType::Path: return item.Path;
-		case ColumnType::Triggers: return TaskHelper::GetTaskTriggers(item.spTask);
-		case ColumnType::Status: return TaskHelper::TaskStateToString(GetTaskState(item));
-		case ColumnType::InstanceGuid:
-		{
-			CComBSTR guid;
-			item.spRunningTask->get_InstanceGuid(&guid);
-			return CString(guid);
-		}
-		case ColumnType::RunningPid:
-		{
-			DWORD pid;
-			item.spRunningTask->get_EnginePID(&pid);
-			CString text;
-			text.Format(L"%u (%s)", pid, (PCWSTR)TaskHelper::GetProcessName(pid));
-			return text;
-		}
-		case ColumnType::LastRun:
-		{
-			DATE date;
-			item.spTask->get_LastRunTime(&date);
+	case ColumnType::Name: return item.Name;
+	case ColumnType::Path: return item.Path;
+	case ColumnType::Triggers: return TaskHelper::GetTaskTriggers(item.spTask);
+	case ColumnType::Status: return TaskHelper::TaskStateToString(GetTaskState(item));
+	case ColumnType::InstanceGuid:
+	{
+		CComBSTR guid;
+		item.spRunningTask->get_InstanceGuid(&guid);
+		return CString(guid);
+	}
+	case ColumnType::RunningPid:
+	{
+		DWORD pid;
+		item.spRunningTask->get_EnginePID(&pid);
+		CString text;
+		text.Format(L"%u (%s)", pid, (PCWSTR)TaskHelper::GetProcessName(pid));
+		return text;
+	}
+	case ColumnType::LastRun:
+	{
+		DATE date;
+		item.spTask->get_LastRunTime(&date);
 
-			if (date == 0)
-				return L"";
+		if (date == 0)
+			return L"";
 
-			CComVariant v(date, VT_DATE);
-			v.ChangeType(VT_BSTR);
-			return CString(v.bstrVal);
-		}
-		case ColumnType::NextRun:
-		{
-			if (item.NextRun == 0)
-				item.spTask->get_NextRunTime(&item.NextRun);
+		CComVariant v(date, VT_DATE);
+		v.ChangeType(VT_BSTR);
+		return CString(v.bstrVal);
+	}
+	case ColumnType::NextRun:
+	{
+		if (item.NextRun == 0)
+			item.spTask->get_NextRunTime(&item.NextRun);
 
-			if (item.NextRun == 0)
-				return L"";
+		if (item.NextRun == 0)
+			return L"";
 
-			CComVariant v(item.NextRun, VT_DATE);
-			v.ChangeType(VT_BSTR);
-			return CString(v.bstrVal);
-		}
-		case ColumnType::RunResults:
-		{
-			LONG result;
-			item.spTask->get_LastTaskResult(&result);
-			auto msg = TaskHelper::FormatErrorMessage(result);
-			msg.Format(L"%s (0x%X)", (PCWSTR)msg, result);
-			return msg;
-		}
-		case ColumnType::Created: return GetTaskCreateDate(item);
-		case ColumnType::Author: return GetTaskAuthor(item);
-		case ColumnType::CurrentAction:
-		{
-			CComBSTR action;
-			item.spRunningTask->get_CurrentAction(&action);
-			return CString(action);
-		}
+		CComVariant v(item.NextRun, VT_DATE);
+		v.ChangeType(VT_BSTR);
+		return CString(v.bstrVal);
+	}
+	case ColumnType::RunResults:
+	{
+		LONG result;
+		item.spTask->get_LastTaskResult(&result);
+		auto msg = TaskHelper::FormatErrorMessage(result);
+		msg.Format(L"%s (0x%X)", (PCWSTR)msg, result);
+		return msg;
+	}
+	case ColumnType::Created: return GetTaskCreateDate(item);
+	case ColumnType::Author: return GetTaskAuthor(item);
+	case ColumnType::CurrentAction:
+	{
+		CComBSTR action;
+		item.spRunningTask->get_CurrentAction(&action);
+		return CString(action);
+	}
 	}
 	return L"";
 }
@@ -83,10 +83,10 @@ int CTaskSchedView::GetRowImage(HWND h, int row, int col) const {
 	auto& item = m_Items[row];
 	switch (GetTaskState(item))
 	{
-		case TASK_STATE_DISABLED: return 1;
-		case TASK_STATE_RUNNING: return 2;
-		default:
-			break;
+	case TASK_STATE_DISABLED: return 1;
+	case TASK_STATE_RUNNING: return 2;
+	default:
+		break;
 	}
 	return 0;
 }
@@ -103,54 +103,54 @@ void CTaskSchedView::DoSort(const SortInfo* si) {
 	auto col = cm->GetColumnTag<ColumnType>(si->SortColumn);
 	auto compare = [&](TaskItem& item1, TaskItem& item2) {
 		switch (col) {
-			case ColumnType::Name: return SortHelper::SortStrings(item1.Name, item2.Name, asc);
-			case ColumnType::Path: return SortHelper::SortStrings(item1.Path, item2.Path, asc);
-			case ColumnType::Status: return SortHelper::SortNumbers(GetTaskState(item1),
-				GetTaskState(item2), asc);
-			case ColumnType::RunningPid:
-			{
-				DWORD p1, p2;
-				item1.spRunningTask->get_EnginePID(&p1);
-				item2.spRunningTask->get_EnginePID(&p2);
-				return SortHelper::SortNumbers(p1, p2, asc);
+		case ColumnType::Name: return SortHelper::SortStrings(item1.Name, item2.Name, asc);
+		case ColumnType::Path: return SortHelper::SortStrings(item1.Path, item2.Path, asc);
+		case ColumnType::Status: return SortHelper::SortNumbers(GetTaskState(item1),
+			GetTaskState(item2), asc);
+		case ColumnType::RunningPid:
+		{
+			DWORD p1, p2;
+			item1.spRunningTask->get_EnginePID(&p1);
+			item2.spRunningTask->get_EnginePID(&p2);
+			return SortHelper::SortNumbers(p1, p2, asc);
+		}
+		case ColumnType::RunResults:
+		{
+			LONG r1, r2;
+			item1.spTask->get_LastTaskResult(&r1);
+			item2.spTask->get_LastTaskResult(&r2);
+			return SortHelper::SortNumbers(r1, r2, asc);
+		}
+		case ColumnType::Author: return SortHelper::SortStrings(GetTaskAuthor(item1),
+			GetTaskAuthor(item2), asc);
+		case ColumnType::Created: return SortHelper::SortStrings(GetTaskCreateDate(item1),
+			GetTaskCreateDate(item2), asc);
+		case ColumnType::Triggers: return SortHelper::SortStrings(TaskHelper::GetTaskTriggers(item1.spTask),
+			TaskHelper::GetTaskTriggers(item2.spTask), asc);
+		case ColumnType::LastRun:
+		{
+			DATE d1, d2;
+			item1.spTask->get_LastRunTime(&d1);
+			item2.spTask->get_LastRunTime(&d2);
+			return SortHelper::SortNumbers(d1, d2, asc);
+		}
+		case ColumnType::NextRun:
+		{
+			DATE d1 = item1.NextRun, d2 = item2.NextRun;
+			if (d1 == 0) {
+				item1.spTask->get_NextRunTime(&d1);
+				item1.NextRun = d1;
 			}
-			case ColumnType::RunResults:
-			{
-				LONG r1, r2;
-				item1.spTask->get_LastTaskResult(&r1);
-				item2.spTask->get_LastTaskResult(&r2);
-				return SortHelper::SortNumbers(r1, r2, asc);
+			if (d2 == 0) {
+				item2.spTask->get_NextRunTime(&d2);
+				item2.NextRun = d2;
 			}
-			case ColumnType::Author: return SortHelper::SortStrings(GetTaskAuthor(item1),
-				GetTaskAuthor(item2), asc);
-			case ColumnType::Created: return SortHelper::SortStrings(GetTaskCreateDate(item1),
-				GetTaskCreateDate(item2), asc);
-			case ColumnType::Triggers: return SortHelper::SortStrings(TaskHelper::GetTaskTriggers(item1.spTask),
-				TaskHelper::GetTaskTriggers(item2.spTask), asc);
-			case ColumnType::LastRun:
-			{
-				DATE d1, d2;
-				item1.spTask->get_LastRunTime(&d1);
-				item2.spTask->get_LastRunTime(&d2);
-				return SortHelper::SortNumbers(d1, d2, asc);
-			}
-			case ColumnType::NextRun:
-			{
-				DATE d1 = item1.NextRun, d2 = item2.NextRun;
-				if (d1 == 0) {
-					item1.spTask->get_NextRunTime(&d1);
-					item1.NextRun = d1;
-				}
-				if (d2 == 0) {
-					item2.spTask->get_NextRunTime(&d2);
-					item2.NextRun = d2;
-				}
-				return SortHelper::SortNumbers(d1, d2, asc);
-			}
+			return SortHelper::SortNumbers(d1, d2, asc);
+		}
 		}
 
 		return false;
-	};
+		};
 
 	CWaitCursor wait(false);
 	if (col == ColumnType::Triggers && m_Items.size() > 30)
@@ -162,8 +162,8 @@ void CTaskSchedView::DoSortDetails(const SortInfo* si) {
 	std::sort(m_ItemDetails.begin(), m_ItemDetails.end(), [&](const auto& d1, const auto& d2) {
 		switch (si->SortColumn)
 		{
-			case 0: return SortHelper::SortStrings(d1.Name, d2.Name, si->SortAscending);
-			case 1: return SortHelper::SortStrings(d1.Details, d2.Details, si->SortAscending);
+		case 0: return SortHelper::SortStrings(d1.Name, d2.Name, si->SortAscending);
+		case 1: return SortHelper::SortStrings(d1.Details, d2.Details, si->SortAscending);
 		}
 		return false;
 		});
@@ -192,7 +192,7 @@ CString CTaskSchedView::GetTaskCreateDate(const TaskItem& item) const {
 BOOL CTaskSchedView::OnRightClickList(HWND h, int row, int col, const POINT& pt) {
 	CMenu menu;
 	menu.LoadMenu(IDR_TASK_CONTEXT);
-	
+
 	return TrackPopupMenu(menu.GetSubMenu(h == m_List ? 0 : 2), 0, pt.x, pt.y, 0, m_hWnd, nullptr);
 }
 
@@ -206,7 +206,7 @@ LRESULT CTaskSchedView::OnCreate(UINT, WPARAM, LPARAM, BOOL&) {
 
 	HWND hWnd = m_MainSplitter.Create(m_hWnd, rcDefault, nullptr,
 		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, 0);
-	
+
 	hWnd = m_Tree.Create(m_MainSplitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
 		| WS_CLIPCHILDREN | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES
 		| TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS, 0
@@ -221,17 +221,17 @@ LRESULT CTaskSchedView::OnCreate(UINT, WPARAM, LPARAM, BOOL&) {
 			images.AddIcon(AtlLoadIconImage(icon, 0, 16, 16));
 		m_Tree.SetImageList(images, TVSIL_NORMAL);
 	}
-	
+
 	::SetWindowTheme(m_Tree, L"Explorer", nullptr);
 
-	m_ListSplitter.Create(m_MainSplitter,rcDefault,nullptr,
+	m_ListSplitter.Create(m_MainSplitter, rcDefault, nullptr,
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0);
 	m_ListSplitter.SetSplitterPosPct(50);
 	m_MainSplitter.SetSplitterPanes(m_Tree, m_ListSplitter);
 	m_MainSplitter.SetSplitterPosPct(25);
 	m_MainSplitter.UpdateSplitterLayout();
 
-	hWnd = m_List.Create(m_ListSplitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE 
+	hWnd = m_List.Create(m_ListSplitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE
 		| WS_CLIPSIBLINGS | WS_CLIPCHILDREN
 		| LVS_OWNERDATA | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS,
 		0, TaskListId);
@@ -251,7 +251,7 @@ LRESULT CTaskSchedView::OnCreate(UINT, WPARAM, LPARAM, BOOL&) {
 	hWnd = m_Details.Create(m_ListSplitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE
 		| WS_CLIPSIBLINGS | WS_CLIPCHILDREN | LVS_OWNERDATA | LVS_REPORT
 		| LVS_SINGLESEL | LVS_SHOWSELALWAYS, 0, DetailsListId);
-	m_Details.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT 
+	m_Details.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT
 		| LVS_EX_DOUBLEBUFFER | LVS_EX_INFOTIP);
 	{
 		CImageList images;
@@ -271,7 +271,7 @@ LRESULT CTaskSchedView::OnCreate(UINT, WPARAM, LPARAM, BOOL&) {
 	SwitchColumns();
 
 	m_ListSplitter.SetSplitterPanes(m_List, m_Details);
-	
+
 	PostMessage(WM_BUILD_TASK_SCHED_TREE);
 	UpdateUI();
 
@@ -372,20 +372,20 @@ void CTaskSchedView::RefreshList() {
 	UpdateDetails();
 	switch (static_cast<NodeType>(m_Tree.GetItemData(item)))
 	{
-		case NodeType::AllTasks:
-			if (oldNodeType == NodeType::RunningTasks)
-				SwitchColumns();
-			EnumAllTasks();
-			DoSort(GetSortInfo(m_List));
-			return;
-
-		case NodeType::RunningTasks:
+	case NodeType::AllTasks:
+		if (oldNodeType == NodeType::RunningTasks)
 			SwitchColumns();
-			EnumRunningTasks();
-			DoSort(GetSortInfo(m_List));
-			return;
-		default:
-			break;
+		EnumAllTasks();
+		DoSort(GetSortInfo(m_List));
+		return;
+
+	case NodeType::RunningTasks:
+		SwitchColumns();
+		EnumRunningTasks();
+		DoSort(GetSortInfo(m_List));
+		return;
+	default:
+		break;
 	}
 
 	if (oldNodeType == NodeType::RunningTasks)
@@ -731,7 +731,7 @@ void CTaskSchedView::EnumTasks() {
 	path.TrimRight(L"\\");
 	CComPtr<IRegisteredTaskCollection> spColl;
 	m_spCurrentFolder->GetTasks(TASK_ENUM_HIDDEN, &spColl);
-	ComHelper::DoForeach<IRegisteredTaskCollection, IRegisteredTask>(spColl, [&](auto task){
+	ComHelper::DoForeach<IRegisteredTaskCollection, IRegisteredTask>(spColl, [&](auto task) {
 		TaskItem item;
 		item.spTask = task;
 		CComBSTR name;
@@ -740,7 +740,7 @@ void CTaskSchedView::EnumTasks() {
 		task->get_Path(&name);
 		item.Path = name;
 		m_Items.push_back(item);
-	});
+		});
 	m_List.SetItemCountEx(static_cast<int>(m_Items.size()), LVSICF_NOSCROLL);
 }
 

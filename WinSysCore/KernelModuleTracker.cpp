@@ -8,14 +8,14 @@ using namespace WinSys;
 uint32_t WinSys::KernelModuleTracker::EnumModules() {
 	_modules.clear();
 	DWORD size = 1 << 18;
-	wil::unique_virtualalloc_ptr<> buffer(::VirtualAlloc(nullptr, size,MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+	wil::unique_virtualalloc_ptr<> buffer(::VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
 
 	PVOID SystemRangeStart = 0;
 	NtQuerySystemInformation(SystemRangeStartInformation,
 		&SystemRangeStart,
 		sizeof(SystemRangeStart),
 		NULL);
-	
+
 
 	NTSTATUS status;
 	status = ::NtQuerySystemInformation(SystemModuleInformationEx, buffer.get(), size, nullptr);
@@ -31,7 +31,7 @@ uint32_t WinSys::KernelModuleTracker::EnumModules() {
 	::GetWindowsDirectoryA(winDir, _countof(winDir));
 	static const std::string root("\\SystemRoot\\");
 	static const std::string global("\\??\\");
-	
+
 	for (;;) {
 		if (p->BaseInfo.ImageBase == 0)
 			break;
@@ -62,7 +62,7 @@ uint32_t WinSys::KernelModuleTracker::EnumModules() {
 				continue;
 			}
 		}
-		
+
 		m->ImageBase = p->BaseInfo.ImageBase;
 		m->MappedBase = p->BaseInfo.MappedBase;
 		m->ImageSize = p->BaseInfo.ImageSize;

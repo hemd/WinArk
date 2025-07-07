@@ -45,23 +45,23 @@ void CDisasmDlg::OnContextMenu(CWindow wnd, CPoint point)
 			int column = -1;
 			switch (menuItem)
 			{
-				case ID_DISASM_COPY_ADDRESS:
-					column = Address;
-					break;
-				case ID_DISASM_COPY_OPCODES:
-					column = Opcodes;
-					break;
-				case ID_DISASM_COPY_INSTRUCTIONS:
-					column = Instruction;
-					break;
-				case ID_DISASM_FOLLOW:
-					FollowInstruction(selection);
-					break;
-				case ID_DISASM_DISASSEMBLE_HERE:
-					DisassembleNewAddress(ProcessAccessHelper::_insts[selection].addr);
-					break;
-				default:
-					break;
+			case ID_DISASM_COPY_ADDRESS:
+				column = Address;
+				break;
+			case ID_DISASM_COPY_OPCODES:
+				column = Opcodes;
+				break;
+			case ID_DISASM_COPY_INSTRUCTIONS:
+				column = Instruction;
+				break;
+			case ID_DISASM_FOLLOW:
+				FollowInstruction(selection);
+				break;
+			case ID_DISASM_DISASSEMBLE_HERE:
+				DisassembleNewAddress(ProcessAccessHelper::_insts[selection].addr);
+				break;
+			default:
+				break;
 			}
 			if (column != -1) {
 				_temp[0] = '\0';
@@ -80,21 +80,21 @@ LRESULT CDisasmDlg::OnNMCustomdraw(NMHDR* pnmh) {
 
 	switch (lpLVCustomDraw->nmcd.dwDrawStage)
 	{
-		case CDDS_ITEMPREPAINT:
-		case CDDS_ITEMPREPAINT | CDDS_SUBITEM:
-		{
-			itemIndex = lpLVCustomDraw->nmcd.dwItemSpec;
-			if (lpLVCustomDraw->iSubItem == Instruction) {
-				DoColorInstruction(lpLVCustomDraw, itemIndex);
-			}
-			else {
-				lpLVCustomDraw->clrText = CLR_DEFAULT;
-				lpLVCustomDraw->clrTextBk = CLR_DEFAULT;
-			}
-			break;
+	case CDDS_ITEMPREPAINT:
+	case CDDS_ITEMPREPAINT | CDDS_SUBITEM:
+	{
+		itemIndex = lpLVCustomDraw->nmcd.dwItemSpec;
+		if (lpLVCustomDraw->iSubItem == Instruction) {
+			DoColorInstruction(lpLVCustomDraw, itemIndex);
 		}
-		default:
-			break;
+		else {
+			lpLVCustomDraw->clrText = CLR_DEFAULT;
+			lpLVCustomDraw->clrTextBk = CLR_DEFAULT;
+		}
+		break;
+	}
+	default:
+		break;
 	}
 
 	result |= CDRF_NOTIFYPOSTPAINT;

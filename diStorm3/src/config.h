@@ -25,32 +25,32 @@ This library is licensed under the BSD license. See the file COPYING.
  * This macro should be defined from compiler command line flags, e.g: -DSUPPORT_64BIT_OFFSET
  * Note: make sure that the caller (library user) defines it too!
  */
-/* #define SUPPORT_64BIT_OFFSET */
+ /* #define SUPPORT_64BIT_OFFSET */
 
-/*
- * If you compile diStorm as a dynamic library (.dll or .so) file, make sure you uncomment the next line.
- * So the interface functions will be exported, otherwise they are useable only for static library.
- * For example, this macro is being set for compiling diStorm as a .dll for Python with CTypes.
- */
-/* #define DISTORM_DYNAMIC */
+ /*
+  * If you compile diStorm as a dynamic library (.dll or .so) file, make sure you uncomment the next line.
+  * So the interface functions will be exported, otherwise they are useable only for static library.
+  * For example, this macro is being set for compiling diStorm as a .dll for Python with CTypes.
+  */
+  /* #define DISTORM_DYNAMIC */
 
-/*
- * If DISTORM_LIGHT is defined, everything involved in formatting the instructions
- * as text will be excluded from compilation.
- * distorm_decode(..) and distorm_format(..) will not be available.
- * This will decrease the size of the executable and leave you with decomposition functionality only.
- *
- * Note: it should be either set in the preprocessor definitions manually or in command line -D switch.
- * #define DISTORM_LIGHT
- */
+  /*
+   * If DISTORM_LIGHT is defined, everything involved in formatting the instructions
+   * as text will be excluded from compilation.
+   * distorm_decode(..) and distorm_format(..) will not be available.
+   * This will decrease the size of the executable and leave you with decomposition functionality only.
+   *
+   * Note: it should be either set in the preprocessor definitions manually or in command line -D switch.
+   * #define DISTORM_LIGHT
+   */
 
-/*
- * diStorm now supports little/big endian CPU's.
- * It should detect the endianness according to predefined macro's of the compiler.
- * If you don't use GCC/MSVC you will have to define it on your own.
- */
+   /*
+	* diStorm now supports little/big endian CPU's.
+	* It should detect the endianness according to predefined macro's of the compiler.
+	* If you don't use GCC/MSVC you will have to define it on your own.
+	*/
 
-/* These macros are used in order to make the code portable. */
+	/* These macros are used in order to make the code portable. */
 #ifdef __GNUC__
 
 #include <stdint.h>
@@ -64,7 +64,7 @@ This library is licensed under the BSD license. See the file COPYING.
 
 /* Set endianity (supposed to be LE though): */
 #ifdef __BIG_ENDIAN__
-	#define BE_SYSTEM
+#define BE_SYSTEM
 #endif
 
 /* End of __GCC__ */
@@ -109,7 +109,7 @@ This library is licensed under the BSD license. See the file COPYING.
 
 /* Set endianity (supposed to be LE though): */
 #if !defined(_M_IX86) && !defined(_M_X64)
-	#define BE_SYSTEM
+#define BE_SYSTEM
 #endif
 
 #endif /* #elif _MSC_VER */
@@ -141,27 +141,27 @@ This library is licensed under the BSD license. See the file COPYING.
  * Assumption: These functions can read from the stream safely!
  * Swap endianity of input to little endian.
  */
-STATIC_INLINE int16_t RSHORT(const uint8_t *s)
+STATIC_INLINE int16_t RSHORT(const uint8_t* s)
 {
 	return s[0] | (s[1] << 8);
 }
-STATIC_INLINE uint16_t RUSHORT(const uint8_t *s)
+STATIC_INLINE uint16_t RUSHORT(const uint8_t* s)
 {
 	return s[0] | (s[1] << 8);
 }
-STATIC_INLINE int32_t RLONG(const uint8_t *s)
+STATIC_INLINE int32_t RLONG(const uint8_t* s)
 {
 	return s[0] | (s[1] << 8) | (s[2] << 16) | (s[3] << 24);
 }
-STATIC_INLINE uint32_t RULONG(const uint8_t *s)
+STATIC_INLINE uint32_t RULONG(const uint8_t* s)
 {
 	return s[0] | (s[1] << 8) | (s[2] << 16) | (s[3] << 24);
 }
-STATIC_INLINE int64_t RLLONG(const uint8_t *s)
+STATIC_INLINE int64_t RLLONG(const uint8_t* s)
 {
 	return s[0] | (s[1] << 8) | (s[2] << 16) | (s[3] << 24) | ((uint64_t)s[4] << 32) | ((uint64_t)s[5] << 40) | ((uint64_t)s[6] << 48) | ((uint64_t)s[7] << 56);
 }
-STATIC_INLINE uint64_t RULLONG(const uint8_t *s)
+STATIC_INLINE uint64_t RULLONG(const uint8_t* s)
 {
 	return s[0] | (s[1] << 8) | (s[2] << 16) | (s[3] << 24) | ((uint64_t)s[4] << 32) | ((uint64_t)s[5] << 40) | ((uint64_t)s[6] << 48) | ((uint64_t)s[7] << 56);
 }

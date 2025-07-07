@@ -290,7 +290,7 @@ typedef enum OpType {
  * which needs a suffix letter in their mnemonic to specify operation-size (depend on operands).
  */
 #define INST_16BITS (1 << 2)
-/* If the opcode is supported by 80286 and upper models (16/32 bits). */
+ /* If the opcode is supported by 80286 and upper models (16/32 bits). */
 #define INST_32BITS (1 << 3)
 /*
  * Prefix flags (6 types: lock/rep, seg override, addr-size, oper-size, REX, VEX)
@@ -298,7 +298,7 @@ typedef enum OpType {
  * note that they must be using a memory operand form, otherwise they generate an exception.
  */
 #define INST_PRE_LOCK (1 << 4)
-/* REPNZ prefix for string instructions only - means an instruction can follow it. */
+ /* REPNZ prefix for string instructions only - means an instruction can follow it. */
 #define INST_PRE_REPNZ (1 << 5)
 /* REP prefix for string instructions only - means an instruction can follow it. */
 #define INST_PRE_REP (1 << 6)
@@ -375,7 +375,7 @@ typedef enum OpType {
  * (MOD==11: got the right instruction, else skip +4 in prefixed table for the correct instruction).
  */
 #define INST_MODRR_BASED (1 << 5)
-/* Indicates that the instruction doesn't use the VVVV field of the VEX prefix, if it does then it's undecodable. */
+ /* Indicates that the instruction doesn't use the VVVV field of the VEX prefix, if it does then it's undecodable. */
 #define INST_VEX_V_UNUSED (1 << 6)
 
 /* Indication that the instruction is privileged (Ring 0), this should be checked on the opcodeId field. */
@@ -386,7 +386,7 @@ typedef enum OpType {
  * Destination (1st), Source (2nd), op3 (3rd), op4 (4th).
  * Used to set the operands' fields in the _DInst structure!
  */
-typedef enum {ONT_NONE = -1, ONT_1 = 0, ONT_2 = 1, ONT_3 = 2, ONT_4 = 3} _OperandNumberType;
+typedef enum { ONT_NONE = -1, ONT_1 = 0, ONT_2 = 1, ONT_3 = 2, ONT_4 = 3 } _OperandNumberType;
 
 /* CPU Flags that instructions modify, test or undefine, in compacted form (CF,PF,AF,ZF,SF are 1:1 map to EFLAGS). */
 #define D_COMPACT_CF 1		/* Carry */

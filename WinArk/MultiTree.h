@@ -270,7 +270,7 @@ public:
 		MESSAGE_HANDLER_EX(TVM_INSERTITEM, OnInsertItem)
 		REFLECTED_NOTIFY_CODE_HANDLER_EX(TVN_DELETEITEM, OnDeleteItem)
 		CHAIN_MSG_MAP_ALT(CCustomDraw<CMultiSelectTreeViewCtrl>, 1)
-	END_MSG_MAP()
+		END_MSG_MAP()
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -294,16 +294,16 @@ public:
 		{
 			switch (nChar)
 			{
-				case VK_UP:
-				case VK_DOWN:
-				case VK_HOME:
-				case VK_END:
-				case VK_NEXT:
-				case VK_PRIOR:
-					for (int i = 0; i < m_aData.GetSize(); i++)
-					{
-						_SelectItem(i, false, TVC_BYKEYBOARD);
-					}
+			case VK_UP:
+			case VK_DOWN:
+			case VK_HOME:
+			case VK_END:
+			case VK_NEXT:
+			case VK_PRIOR:
+				for (int i = 0; i < m_aData.GetSize(); i++)
+				{
+					_SelectItem(i, false, TVC_BYKEYBOARD);
+				}
 			}
 		}
 		SetMsgHandled(FALSE);
@@ -315,23 +315,23 @@ public:
 		{
 			switch (nChar)
 			{
-				case VK_UP:
-				case VK_DOWN:
-				case VK_HOME:
-				case VK_END:
-				case VK_NEXT:
-				case VK_PRIOR:
-					HTREEITEM hItem = GetFocusItem();
-					// Is current or first-shift-item the upper item?
-					CRect rcItem1, rcItem2;
-					GetItemRect(m_hExtSelStart, &rcItem1, TRUE);
-					GetItemRect(hItem, &rcItem2, TRUE);
-					// Select from current item to item where SHIFT was pressed
-					if (rcItem1.top > rcItem2.top)
-						_SelectTree(hItem, m_hExtSelStart, TVC_BYKEYBOARD);
-					else
-						_SelectTree(m_hExtSelStart, hItem, TVC_BYKEYBOARD);
-					_SelectItem(hItem, true, TVC_BYKEYBOARD);
+			case VK_UP:
+			case VK_DOWN:
+			case VK_HOME:
+			case VK_END:
+			case VK_NEXT:
+			case VK_PRIOR:
+				HTREEITEM hItem = GetFocusItem();
+				// Is current or first-shift-item the upper item?
+				CRect rcItem1, rcItem2;
+				GetItemRect(m_hExtSelStart, &rcItem1, TRUE);
+				GetItemRect(hItem, &rcItem2, TRUE);
+				// Select from current item to item where SHIFT was pressed
+				if (rcItem1.top > rcItem2.top)
+					_SelectTree(hItem, m_hExtSelStart, TVC_BYKEYBOARD);
+				else
+					_SelectTree(m_hExtSelStart, hItem, TVC_BYKEYBOARD);
+				_SelectItem(hItem, true, TVC_BYKEYBOARD);
 			}
 		}
 		SetMsgHandled(FALSE);

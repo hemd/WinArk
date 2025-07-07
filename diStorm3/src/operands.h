@@ -18,8 +18,8 @@ This library is licensed under the BSD license. See the file COPYING.
 #include "instructions.h"
 
 int operands_extract(_CodeInfo* ci, _DInst* di, _InstInfo* ii,
-                     _iflags instFlags, _OpType type,
-                     unsigned int modrm, _PrefixState* ps, _DecodeType effOpSz,
-                     _DecodeType effAdrSz, _Operand* op);
+	_iflags instFlags, _OpType type,
+	unsigned int modrm, _PrefixState* ps, _DecodeType effOpSz,
+	_DecodeType effAdrSz, _Operand* op);
 
 #endif /* OPERANDS_H */

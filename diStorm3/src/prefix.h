@@ -17,10 +17,10 @@ This library is licensed under the BSD license. See the file COPYING.
 
 
 /* Specifies the type of the extension prefix, such as: REX, 2 bytes VEX, 3 bytes VEX. */
-typedef enum {PET_NONE = 0, PET_REX, PET_VEX2BYTES, PET_VEX3BYTES} _PrefixExtType;
+typedef enum { PET_NONE = 0, PET_REX, PET_VEX2BYTES, PET_VEX3BYTES } _PrefixExtType;
 
 /* Specifies an index into a table of prefixes by their type. */
-typedef enum {PFXIDX_NONE = -1, PFXIDX_REX, PFXIDX_LOREP, PFXIDX_SEG, PFXIDX_OP_SIZE, PFXIDX_ADRS, PFXIDX_MAX} _PrefixIndexer;
+typedef enum { PFXIDX_NONE = -1, PFXIDX_REX, PFXIDX_LOREP, PFXIDX_SEG, PFXIDX_OP_SIZE, PFXIDX_ADRS, PFXIDX_MAX } _PrefixIndexer;
 
 /*
 * This holds the prefixes state for the current instruction we decode.

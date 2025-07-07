@@ -5,7 +5,7 @@
 
 class CKernelInlineHookDlg :public CDialogImpl<CKernelInlineHookDlg> {
 public:
-	enum {IDD = IDD_BACKGROUND};
+	enum { IDD = IDD_BACKGROUND };
 
 	CKernelInlineHookDlg(std::shared_ptr<WinSys::KernelModuleInfo>& info) :_info(info) {}
 	void OnGetMinMaxInfo(LPMINMAXINFO lpMMI);
@@ -15,7 +15,7 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MSG_WM_GETMINMAXINFO(OnGetMinMaxInfo)
-	END_MSG_MAP()
+		END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

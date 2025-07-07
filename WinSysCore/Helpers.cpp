@@ -72,7 +72,7 @@ DWORD Helpers::GetKernelImageSize() {
 std::string Helpers::GetNtosFileName() {
 	ULONG size = 1 << 18;
 	wil::unique_virtualalloc_ptr<> buffer(::VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
-	if(!buffer) {
+	if (!buffer) {
 		return "";
 	}
 	NTSTATUS status;

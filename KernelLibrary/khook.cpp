@@ -93,7 +93,7 @@ bool khook::Hook(PVOID api, void* newfunc) {
 
 	// set original data
 	RtlCopyMemory(&_info->Original, (const void*)addr, sizeof(OpcodesInfo));
-	
+
 	if (!NT_SUCCESS(RtlSuperCopyMemory((void*)addr, &_info->Opcodes, sizeof(OpcodesInfo)))) {
 		delete _info;
 		return false;
@@ -179,7 +179,7 @@ bool khook::GetSystemServiceTable() {
 				ULONG_PTR searchAddr = (ULONG_PTR)((PUCHAR)_kernelImageBase + pSec->VirtualAddress);
 				ULONG_PTR maxAddress = searchAddr + pSec->Misc.VirtualSize;
 				UCHAR pattern[] = { 0x8B, 0xF8, 0xC1, 0xEF, 0x07, 0x83, 0xE7, 0x20, 0x25, 0xFF, 0x0F, 0x00, 0x00 };
-				ULONG_PTR label = Helpers::SearchSignature(searchAddr,pattern, sizeof(pattern), pSec->Misc.VirtualSize);
+				ULONG_PTR label = Helpers::SearchSignature(searchAddr, pattern, sizeof(pattern), pSec->Misc.VirtualSize);
 				if (label == 0)
 					return false;
 				searchAddr = label + sizeof(pattern);
@@ -214,19 +214,19 @@ bool khook::GetShadowSystemServiceNumber(PUNICODE_STRING symbolName, PULONG inde
 	}
 
 	PLIST_ENTRY entry = nullptr;
-	do 	{
+	do {
 		entry = item->Entry.Flink;  // 后继
 		item = CONTAINING_RECORD(entry, ShadowServiceNameEntry, Entry);
 		if (0 == RtlCompareUnicodeString(symbolName, &item->Name, false)) {
 			*index = item->Index;
 			return true;
 		}
-	} while (entry->Blink!=entry->Flink); // 头结点
+	} while (entry->Blink != entry->Flink); // 头结点
 
 	return false;
 }
 
-bool khook::GetSystemServiceNumber(const char* exportName,PULONG index) {
+bool khook::GetSystemServiceNumber(const char* exportName, PULONG index) {
 	PEParser parser(L"\\SystemRoot\\system32\\ntdll.dll");
 	ULONG offset = parser.GetExportByName(exportName);
 	if (offset != 0) {
@@ -325,12 +325,12 @@ bool khook::HookSSDT(const char* apiName, void* newfunc) {
 	if (!success) {
 		return false;
 	}
-	
+
 	success = GetSystemServiceTable();
 	if (!success) {
 		return false;
 	}
-	
+
 
 	ULONG_PTR base = (ULONG_PTR)_ntTable->ServiceTableBase;
 	if (!base) {
@@ -376,7 +376,7 @@ bool khook::HookSSDT(const char* apiName, void* newfunc) {
 		if (!caveAddress) {
 			return false;
 		}
-		
+
 		success = Hook(caveAddress, newfunc);
 		if (!success)
 			return false;
@@ -439,7 +439,7 @@ bool khook::UnhookShadowSSDT() {
 
 	RtlSuperCopyMemory(&_win32kTable->ServiceTableBase[_info->Index], &_info->Old, sizeof(_info->Old));
 
-	do 	{
+	do {
 #ifdef _WIN64
 		success = Unhook();
 		if (!success)
@@ -483,7 +483,7 @@ bool khook::GetKernelAndWin32kBase() {
 	UNICODE_STRING moduleName;
 	auto entry = info->Modules;
 	ANSI_STRING ansiModuleName;
-	for(;;) {
+	for (;;) {
 		if (entry->ImageBase == 0) {
 			break;
 		}
@@ -506,94 +506,94 @@ bool khook::GetKernelAndWin32kBase() {
 	return true;
 }
 
-PVOID khook::GetOriginalFunction(HookType type,const char* apiName,PUNICODE_STRING symbolName) {
+PVOID khook::GetOriginalFunction(HookType type, const char* apiName, PUNICODE_STRING symbolName) {
 	ULONG_PTR address = 0;
-	switch (type) 	{
-		case HookType::SSDT:
-		{
-			bool success = GetKernelAndWin32kBase();
-			if (!success) {
+	switch (type) {
+	case HookType::SSDT:
+	{
+		bool success = GetKernelAndWin32kBase();
+		if (!success) {
+			return nullptr;
+		}
+
+		success = GetSystemServiceTable();
+		if (!success) {
+			return nullptr;
+		}
+
+
+		ULONG_PTR base = (ULONG_PTR)_ntTable->ServiceTableBase;
+		if (!base) {
+			return nullptr;
+		}
+		ULONG index = 0;
+		success = GetSystemServiceNumber(apiName, &index);
+		if (success) {
+			if (index >= _ntTable->NumberOfServices) {
 				return nullptr;
 			}
+			LONG oldValue = _ntTable->ServiceTableBase[index];
+#ifdef _WIN64
+			address = (oldValue >> 4) + base;
+#else
+			address = oldValue;
+#endif
+		}
+	}
+	break;
+	case HookType::ShadowSSDT:
+	{
+		bool success = GetKernelAndWin32kBase();
+		if (!success) {
+			return nullptr;
+		}
 
-			success = GetSystemServiceTable();
-			if (!success) {
-				return nullptr;
-			}
-			
+		success = GetShadowSystemServiceTable();
+		if (!success)
+			return nullptr;
 
-			ULONG_PTR base = (ULONG_PTR)_ntTable->ServiceTableBase;
+
+
+		// Get the process id of the "winlogon.exe" process
+		success = SearchSessionProcess();
+		if (!success)
+			return nullptr;
+
+		PEPROCESS Process;
+		NTSTATUS status = PsLookupProcessByProcessId(_pid, &Process);
+		if (!NT_SUCCESS(status))
+			return nullptr;
+
+		KAPC_STATE apcState;
+		KeStackAttachProcess(Process, &apcState);
+
+		do {
+			ULONG_PTR base = (ULONG_PTR)_win32kTable->ServiceTableBase;
 			if (!base) {
-				return nullptr;
+				break;
 			}
-			ULONG index = 0;
-			success = GetSystemServiceNumber(apiName, &index);
+			ULONG index;
+			success = GetShadowSystemServiceNumber(symbolName, &index);
 			if (success) {
-				if (index >= _ntTable->NumberOfServices) {
-					return nullptr;
+				if (index > _win32kTable->NumberOfServices) {
+					break;
 				}
-				LONG oldValue = _ntTable->ServiceTableBase[index];
+
+				LONG oldValue = _win32kTable->ServiceTableBase[index];
 #ifdef _WIN64
 				address = (oldValue >> 4) + base;
 #else
 				address = oldValue;
-#endif
-			}
-		}
-			break;
-		case HookType::ShadowSSDT:
-		{
-			bool success = GetKernelAndWin32kBase();
-			if (!success) {
-				return nullptr;
-			}
-
-			success = GetShadowSystemServiceTable();
-			if (!success)
-				return nullptr;
-
-			
-
-			// Get the process id of the "winlogon.exe" process
-			success = SearchSessionProcess();
-			if (!success)
-				return nullptr;
-
-			PEPROCESS Process;
-			NTSTATUS status = PsLookupProcessByProcessId(_pid, &Process);
-			if (!NT_SUCCESS(status))
-				return nullptr;
-
-			KAPC_STATE apcState;
-			KeStackAttachProcess(Process, &apcState);
-
-			do 	{
-				ULONG_PTR base = (ULONG_PTR)_win32kTable->ServiceTableBase;
-				if (!base) {
-					break;
-				}
-				ULONG index;
-				success = GetShadowSystemServiceNumber(symbolName, &index);
-				if (success) {
-					if (index > _win32kTable->NumberOfServices) {
-						break;
-					}
-
-					LONG oldValue = _win32kTable->ServiceTableBase[index];
-#ifdef _WIN64
-					address = (oldValue >> 4) + base;
-#else
-					address = oldValue;
 #endif // __WIN64
-				}
-			} while (false);
+			}
+		} while (false);
 
-			KeUnstackDetachProcess(&apcState);
-			ObDereferenceObject(Process);
-		}
-			break;
-		default:
-			break;
+		KeUnstackDetachProcess(&apcState);
+		ObDereferenceObject(Process);
+	}
+	break;
+	default:
+		break;
 	}
 	return (PVOID)address;
 }
@@ -652,7 +652,7 @@ bool khook::HookShadowSSDT(PUNICODE_STRING apiName, void* newfunc) {
 	if (!success) {
 		return false;
 	}
-	
+
 	success = GetShadowSystemServiceTable();
 	if (!success)
 		return false;
@@ -755,7 +755,7 @@ bool khook::HookShadowSSDT(PUNICODE_STRING apiName, void* newfunc) {
 	return success ? true : false;
 }
 
-bool khook::HookKernelApi(PVOID api, void* newfunc,bool first) {
+bool khook::HookKernelApi(PVOID api, void* newfunc, bool first) {
 	if (first) {
 		ULONG_PTR addr = (ULONG_PTR)newfunc;
 		if (!addr)
@@ -775,7 +775,7 @@ bool khook::HookKernelApi(PVOID api, void* newfunc,bool first) {
 		// set original data
 		RtlCopyMemory(&_inlineInfo->Original, api, sizeof(InlineOpcodesInfo));
 	}
-	
+
 	NTSTATUS status = SecureExchange(&_inlineInfo->Opcodes);
 	if (!NT_SUCCESS(status)) {
 		delete _inlineInfo;
@@ -854,12 +854,12 @@ bool khook::UnhookKernelApi(bool end) {
 	if (!NT_SUCCESS(status)) {
 		return false;
 	}
-	if(end)
+	if (end)
 		delete _inlineInfo;
 	return true;
 }
 
-bool khook::GetApiAddress(ULONG index,PVOID* address) {
+bool khook::GetApiAddress(ULONG index, PVOID* address) {
 	bool success = GetSystemServiceTable();
 	if (!success) {
 		return false;
@@ -876,9 +876,9 @@ bool khook::GetApiAddress(ULONG index,PVOID* address) {
 
 		LONG oldValue = _ntTable->ServiceTableBase[index];
 #ifdef _WIN64
-		*address = (PVOID)((oldValue >> 4) + base);
+		* address = (PVOID)((oldValue >> 4) + base);
 #else
-		*address = (PVOID)oldValue;
+		* address = (PVOID)oldValue;
 #endif // _WIN64
 		return true;
 	}
@@ -919,9 +919,9 @@ bool khook::GetShadowApiAddress(ULONG index, PVOID* address) {
 
 			LONG oldValue = _win32kTable->ServiceTableBase[index];
 #ifdef _WIN64
-			*address = (PVOID)((oldValue >> 4) + base);
+			* address = (PVOID)((oldValue >> 4) + base);
 #else
-			*address = (PVOID)oldValue;
+			* address = (PVOID)oldValue;
 #endif // _WIN64
 
 			success = true;
@@ -940,7 +940,7 @@ ULONG khook::GetShadowServiceLimit() {
 	return _win32kTable->NumberOfServices;
 }
 
-void khook::DetectInlineHook(KInlineData* pInfo,KernelInlineHookData* pData) {
+void khook::DetectInlineHook(KInlineData* pInfo, KernelInlineHookData* pData) {
 	PVOID imageBase = (PVOID)pInfo->ImageBase;
 	ULONG desiredCount = pInfo->Count;
 
@@ -958,7 +958,7 @@ void khook::DetectInlineHook(KInlineData* pInfo,KernelInlineHookData* pData) {
 
 #ifndef _WIN64
 	// x86 code
-	
+
 #else
 	// x64 code
 	PEParser parser(imageBase);
@@ -995,7 +995,7 @@ void khook::DetectInlineHook(KInlineData* pInfo,KernelInlineHookData* pData) {
 
 			UCHAR pattern1[] = "\x48\xb8\xcc\xcc\xcc\xcc\xcc\xcc\xcc\xcc\xff\xe0";
 			ULONG patternSize = sizeof(pattern1) - 1;
-			
+
 
 			ULONG_PTR maxSearchAddr = maxAddress - patternSize;
 			ULONG_PTR searchAddr = startAddr;
@@ -1005,7 +1005,7 @@ void khook::DetectInlineHook(KInlineData* pInfo,KernelInlineHookData* pData) {
 				if (remainSize < patternSize) {
 					break;
 				}
-				NTSTATUS status = Helpers::SearchPattern(pattern1, 0xCC, patternSize, 
+				NTSTATUS status = Helpers::SearchPattern(pattern1, 0xCC, patternSize,
 					(void*)searchAddr, remainSize, &pFound);
 				if (NT_SUCCESS(status)) {
 					if (totalCount >= desiredCount) {
@@ -1036,7 +1036,7 @@ void khook::DetectInlineHook(KInlineData* pInfo,KernelInlineHookData* pData) {
 				if (remainSize < patternSize) {
 					break;
 				}
-				NTSTATUS status = Helpers::SearchPattern(pattern2, 0xCC, patternSize, 
+				NTSTATUS status = Helpers::SearchPattern(pattern2, 0xCC, patternSize,
 					(void*)searchAddr, remainSize, &pFound);
 				if (NT_SUCCESS(status)) {
 					if (totalCount >= desiredCount) {
@@ -1069,7 +1069,7 @@ void khook::DetectInlineHook(KInlineData* pInfo,KernelInlineHookData* pData) {
 				if (remainSize < patternSize) {
 					break;
 				}
-				NTSTATUS status = Helpers::SearchPattern(pattern3, 0xCC, patternSize, 
+				NTSTATUS status = Helpers::SearchPattern(pattern3, 0xCC, patternSize,
 					(void*)searchAddr, remainSize, &pFound);
 				if (NT_SUCCESS(status)) {
 					do
@@ -1130,7 +1130,7 @@ void khook::DetectInlineHook(KInlineData* pInfo,KernelInlineHookData* pData) {
 							LogInfo("Detect suspicious hook type 3 at %p\n", pFound);
 							LogInfo("0x%-16llX\t\t%hs\n", instrAddress, printBuffer);
 						}
-						
+
 					} while (FALSE);
 
 					searchAddr = (ULONG_PTR)pFound + patternSize;
@@ -1141,7 +1141,7 @@ void khook::DetectInlineHook(KInlineData* pInfo,KernelInlineHookData* pData) {
 				if (totalCount >= desiredCount) {
 					break;
 				}
-				
+
 				remainSize = maxSearchAddr - searchAddr;
 			}
 		}
@@ -1176,7 +1176,7 @@ ULONG khook::GetInlineHookCount(ULONG_PTR base) {
 	// x64 code
 	PEParser parser(imageBase);
 	int count = parser.GetSectionCount();
-	
+
 
 	// Initialize Zydis decoder and formatter
 	ZydisDecoder decoder;
@@ -1214,7 +1214,7 @@ ULONG khook::GetInlineHookCount(ULONG_PTR base) {
 			ULONG_PTR remainSize = pSec->Misc.VirtualSize;
 			while (searchAddr <= maxSearchAddr) {
 				PVOID pFound = NULL;
-				NTSTATUS status = Helpers::SearchPattern(pattern1, 0xCC, patternSize, 
+				NTSTATUS status = Helpers::SearchPattern(pattern1, 0xCC, patternSize,
 					(void*)searchAddr, remainSize, &pFound);
 				if (NT_SUCCESS(status)) {
 					LogInfo("Detect suspicious hook type 1 at %p\n", pFound);
@@ -1234,7 +1234,7 @@ ULONG khook::GetInlineHookCount(ULONG_PTR base) {
 			remainSize = pSec->Misc.VirtualSize;
 			while (searchAddr <= maxSearchAddr) {
 				PVOID pFound = NULL;
-				NTSTATUS status = Helpers::SearchPattern(pattern2, 0xCC, patternSize, 
+				NTSTATUS status = Helpers::SearchPattern(pattern2, 0xCC, patternSize,
 					(void*)searchAddr, remainSize, &pFound);
 				if (NT_SUCCESS(status)) {
 					LogInfo("Detect suspicious hook type 2 at %p\n", pFound);
@@ -1254,7 +1254,7 @@ ULONG khook::GetInlineHookCount(ULONG_PTR base) {
 			remainSize = pSec->Misc.VirtualSize;
 			while (searchAddr <= maxSearchAddr) {
 				PVOID pFound = NULL;
-				NTSTATUS status = Helpers::SearchPattern(pattern3, 0xCC, patternSize, 
+				NTSTATUS status = Helpers::SearchPattern(pattern3, 0xCC, patternSize,
 					(void*)searchAddr, remainSize, &pFound);
 				if (NT_SUCCESS(status)) {
 					do
@@ -1324,12 +1324,12 @@ ULONG khook::GetInlineHookCount(ULONG_PTR base) {
 
 		}
 	}
-	
+
 	KeUnstackDetachProcess(&apcState);
 	ObDereferenceObject(Process);
 
 #endif
 	LogInfo("Total inline count: %d\n", totalCount);
-	
+
 	return totalCount;
 }

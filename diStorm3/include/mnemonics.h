@@ -13,23 +13,23 @@ This library is licensed under the BSD license. See the file COPYING.
 #define MNEMONICS_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 #ifndef DISTORM_LIGHT
 
-typedef struct WMnemonic {
-	unsigned char length;
-	unsigned char p[1]; /* p is a null terminated string, which contains 'length' characters. */
-} _WMnemonic;
+	typedef struct WMnemonic {
+		unsigned char length;
+		unsigned char p[1]; /* p is a null terminated string, which contains 'length' characters. */
+	} _WMnemonic;
 
-typedef struct WRegister {
-	unsigned int length;
-	unsigned char p[6]; /* p is a null terminated string. */
-} _WRegister;
+	typedef struct WRegister {
+		unsigned int length;
+		unsigned char p[6]; /* p is a null terminated string. */
+	} _WRegister;
 
-extern const unsigned char _MNEMONICS[];
-extern const _WRegister _REGISTERS[];
+	extern const unsigned char _MNEMONICS[];
+	extern const _WRegister _REGISTERS[];
 
 #endif /* DISTORM_LIGHT */
 
@@ -40,7 +40,7 @@ extern const _WRegister _REGISTERS[];
 #define GET_REGISTER_NAME(r) (unsigned char*)_REGISTERS[(r)].p
 #define GET_MNEMONIC_NAME(m) ((_WMnemonic*)&_MNEMONICS[(m)])->p
 
- typedef enum {
+typedef enum {
 	I_UNDEFINED = 0, I_AAA = 66, I_AAD = 388, I_AAM = 383, I_AAS = 76, I_ADC = 31, I_ADD = 11, I_ADDPD = 3143,
 	I_ADDPS = 3136, I_ADDSD = 3157, I_ADDSS = 3150, I_ADDSUBPD = 6427, I_ADDSUBPS = 6437,
 	I_AESDEC = 9242, I_AESDECLAST = 9259, I_AESENC = 9200, I_AESENCLAST = 9217,

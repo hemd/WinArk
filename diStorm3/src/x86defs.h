@@ -44,7 +44,7 @@ This library is licensed under the BSD license. See the file COPYING.
  */
 #define INST_DIVIDED_MODRM (0xc0)
 
-/* This is the escape byte value used for 3DNow! instructions. */
+ /* This is the escape byte value used for 3DNow! instructions. */
 #define _3DNOW_ESCAPE_BYTE (0x0f)
 
 #define PREFIX_LOCK (0xf0)

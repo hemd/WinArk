@@ -24,7 +24,7 @@ namespace WinSys {
 		size_t Object;
 
 		HandleKey(uint32_t pid, uint32_t handle, size_t obj) :ProcessId(pid), Handle(handle), Object(obj) {}
-		HandleKey() { }
+		HandleKey() {}
 
 		bool operator==(const HandleKey& other) const {
 			return other.Handle == Handle && other.ProcessId == ProcessId && Object == other.Object;

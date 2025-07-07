@@ -21,14 +21,14 @@ public:
 
 	ImportModuleThunk* GetModuleThunk(CTreeItem item);
 	ImportThunk* GetImportThunk(CTreeItem item);
-	
+
 	void DisplayAllImports();
 	void ClearAllImports();
 	void SelectImports(bool invalid, bool suspect);
 
 	bool InvalidateImport(CTreeItem item);
 	bool InvalidateModule(CTreeItem item);
-	bool SetImport(CTreeItem item, const WCHAR* pModuleName, const CHAR* pApiName, 
+	bool SetImport(CTreeItem item, const WCHAR* pModuleName, const CHAR* pApiName,
 		WORD ordinal = 0, WORD hint = 0, bool valid = true, bool suspect = false);
 	bool CutImport(CTreeItem item);
 	bool CutModule(CTreeItem item);
@@ -80,7 +80,7 @@ private:
 
 	CTreeItem AddDllToTreeView(CMultiSelectTreeViewCtrl& idTreeView, ImportModuleThunk* pModuleThunk);
 	CTreeItem AddApiToTreeView(CMultiSelectTreeViewCtrl& idTreeView, CTreeItem parentDll, ImportThunk* pImportThunk);
-	
+
 	void UpdateImportInTreeView(const ImportThunk* pImportThunk, CTreeItem item);
 	void UpdateModuleInTreeView(const ImportModuleThunk* pImportThunk, CTreeItem item);
 

@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 
-struct SortHelper final abstract {
-	static bool SortStrings(const ATL::CString& s1, const ATL::CString& s2, bool ascending);
+struct SortHelper final abstract{
+	static bool SortStrings(const ATL::CString & s1, const ATL::CString & s2, bool ascending);
 	static bool SortStrings(const std::string& s1, const std::string& s2, bool ascending);
 	static bool SortStrings(const std::wstring& s1, const std::wstring& s2, bool ascending);
 	static bool SortStrings(PCWSTR s1, PCWSTR s2, bool ascending);

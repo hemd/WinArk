@@ -2,8 +2,8 @@
 #include "ImportRebuilder.h"
 #include <Helpers.h>
 
-bool ImportRebuilder::RebuildImportTable(const WCHAR* newFilePath, 
-	std::map<DWORD_PTR, ImportModuleThunk>& moduleThunkMap){
+bool ImportRebuilder::RebuildImportTable(const WCHAR* newFilePath,
+	std::map<DWORD_PTR, ImportModuleThunk>& moduleThunkMap) {
 	bool ret = false;
 	std::map<DWORD_PTR, ImportModuleThunk> copyModule;
 	copyModule.insert(moduleThunkMap.begin(), moduleThunkMap.end());
@@ -29,7 +29,7 @@ bool ImportRebuilder::RebuildImportTable(const WCHAR* newFilePath,
 			ret = SavePEFileToDisk(newFilePath);
 		}
 	}
-	
+
 	return ret;
 }
 
@@ -47,7 +47,7 @@ void ImportRebuilder::EnableNewIATInSection(DWORD_PTR iatAddress, DWORD iatSize)
 	_pIATReferenceScan->_scanForDirectImports = false;
 	_pIATReferenceScan->_scanForNormalImports = true;
 
-	_pIATReferenceScan->StartScan(ProcessAccessHelper::_targetImageBase,ProcessAccessHelper::_targetSizeOfImage, 
+	_pIATReferenceScan->StartScan(ProcessAccessHelper::_targetImageBase, ProcessAccessHelper::_targetSizeOfImage,
 		_iatAddress, _iatSize);
 }
 
@@ -85,7 +85,7 @@ bool ImportRebuilder::BuildNewImportTable(std::map<DWORD_PTR, ImportModuleThunk>
 	}
 
 	SetImportTable(va, _numberOfImportDescriptors * sizeof(IMAGE_IMPORT_DESCRIPTOR));
-	
+
 
 	return true;
 }
@@ -269,11 +269,11 @@ size_t ImportRebuilder::AddImportToImportTable(ImportThunk* pImportThunk, PIMAGE
 
 		len = strlen(pImportThunk->m_Name) + 1;
 
-		memcpy(pImportByName->Name,pImportThunk->m_Name, len);
+		memcpy(pImportByName->Name, pImportThunk->m_Name, len);
 
 		DWORD_PTR offset = _PESections[_importSectionIndex]._sectionHeader.PointerToRawData + sectionOffset;
 		pThunkData->u1.AddressOfData = FileOffsetToRva(offset);
-		
+
 		pThunkData++;
 		pThunkData->u1.AddressOfData = 0;
 
@@ -325,7 +325,7 @@ void ImportRebuilder::CalculateImportSize(std::map<DWORD_PTR, ImportModuleThunk>
 		_sizeOfOFTArray += pointerSize;
 	}
 
-	_sizeOfImportSection = _sizeOfOFTArray + _sizeOfApiAndModuleNames 
+	_sizeOfImportSection = _sizeOfOFTArray + _sizeOfApiAndModuleNames
 		+ _numberOfImportDescriptors * sizeof(IMAGE_IMPORT_DESCRIPTOR);
 }
 

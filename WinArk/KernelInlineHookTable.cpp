@@ -15,58 +15,58 @@ CKernelInlineHookTable::CKernelInlineHookTable(BarInfo& bars, TableInfo& table, 
 CString CKernelInlineHookTable::TypeToString(KernelHookType type) {
 	switch (type)
 	{
-		case KernelHookType::x64HookType1:
-			return L"x64HookType1";
-		case KernelHookType::x64HookType2:
-			return L"x64HookType2";
-		case KernelHookType::x64HookType3:
-			return L"x64HookType3";
-		default:
-			return L"Unknown Type";
+	case KernelHookType::x64HookType1:
+		return L"x64HookType1";
+	case KernelHookType::x64HookType2:
+		return L"x64HookType2";
+	case KernelHookType::x64HookType3:
+		return L"x64HookType3";
+	default:
+		return L"Unknown Type";
 	}
 }
 
 int CKernelInlineHookTable::ParseTableEntry(CString& s, char& mask, int& select, KernelInlineHookInfo& info, int column) {
 	switch (static_cast<Column>(column))
 	{
-		case Column::HookObject:
-			s = info.ModuleName.c_str();
-			break;
+	case Column::HookObject:
+		s = info.ModuleName.c_str();
+		break;
 
-		case Column::HookType:
-			s = TypeToString(info.Type);
-			break;
+	case Column::HookType:
+		s = TypeToString(info.Type);
+		break;
 
-		case Column::Address:
-		{
-			s.Format(L"0x%p  ", info.Address);
-			DWORD64 offset = 0;
-			auto symbol = SymbolHelper::GetSymbolFromAddress(info.Address, &offset);
-			if (symbol) {
-				std::string name = symbol->GetSymbolInfo()->Name;
-				s += Helpers::StringToWstring(name).c_str();
-				if (offset != 0) {
-					CString temp;
-					temp.Format(L"+ 0x%x", offset);
-					s += temp;
-				}
-
+	case Column::Address:
+	{
+		s.Format(L"0x%p  ", info.Address);
+		DWORD64 offset = 0;
+		auto symbol = SymbolHelper::GetSymbolFromAddress(info.Address, &offset);
+		if (symbol) {
+			std::string name = symbol->GetSymbolInfo()->Name;
+			s += Helpers::StringToWstring(name).c_str();
+			if (offset != 0) {
+				CString temp;
+				temp.Format(L"+ 0x%x", offset);
+				s += temp;
 			}
-			break;
+
 		}
+		break;
+	}
 
-		case Column::Module:
-			s = info.TargetModule.c_str();
-			break;
+	case Column::Module:
+		s = info.TargetModule.c_str();
+		break;
 
-		case Column::TargetAddress:
-		{
-			s.Format(L"0x%p", info.TargetAddress);
-			break;
-		}
+	case Column::TargetAddress:
+	{
+		s.Format(L"0x%p", info.TargetAddress);
+		break;
+	}
 
-		default:
-			break;
+	default:
+		break;
 	}
 	return s.GetLength();
 }
@@ -74,14 +74,14 @@ int CKernelInlineHookTable::ParseTableEntry(CString& s, char& mask, int& select,
 bool CKernelInlineHookTable::CompareItems(const KernelInlineHookInfo& s1, const KernelInlineHookInfo& s2, int col, bool asc) {
 	switch (static_cast<Column>(col))
 	{
-		case Column::Module:
-			return SortHelper::SortStrings(s1.TargetModule, s2.TargetModule, asc);
-			break;
-		case Column::TargetAddress:
-			return SortHelper::SortNumbers(s1.TargetAddress, s2.TargetAddress, asc);
-			break;
-		default:
-			break;
+	case Column::Module:
+		return SortHelper::SortStrings(s1.TargetModule, s2.TargetModule, asc);
+		break;
+	case Column::TargetAddress:
+		return SortHelper::SortNumbers(s1.TargetAddress, s2.TargetAddress, asc);
+		break;
+	default:
+		break;
 	}
 	return false;
 }
@@ -337,27 +337,27 @@ bool CKernelInlineHookTable::CheckIsHooked(ULONG_PTR address, ULONG_PTR targetAd
 		ULONG rva = address - _base;
 		switch (type)
 		{
-			case KernelHookType::x64HookType1:
-			{
-				PULONG_PTR pAddr = reinterpret_cast<PULONG_PTR>((PUCHAR)local_image_base + rva + 2);
-				originalAddr = *pAddr;
-				break;
-			}
-			case KernelHookType::x64HookType2:
-			{
-				ULONG lowAddr = *(PULONG)((PUCHAR)local_image_base + rva + 1);
-				ULONG highAddr = *(PULONG)((PUCHAR)local_image_base + rva + 9);
-				originalAddr = ((ULONG_PTR)highAddr << 32) | lowAddr;
-				break;
-			}
-			case KernelHookType::x64HookType3:
-			{
-				ULONG imm = *(PULONG)((PUCHAR)local_image_base + rva + 1);
-				originalAddr = imm + address + 5;
-				break;
-			}
-			default:
-				break;
+		case KernelHookType::x64HookType1:
+		{
+			PULONG_PTR pAddr = reinterpret_cast<PULONG_PTR>((PUCHAR)local_image_base + rva + 2);
+			originalAddr = *pAddr;
+			break;
+		}
+		case KernelHookType::x64HookType2:
+		{
+			ULONG lowAddr = *(PULONG)((PUCHAR)local_image_base + rva + 1);
+			ULONG highAddr = *(PULONG)((PUCHAR)local_image_base + rva + 9);
+			originalAddr = ((ULONG_PTR)highAddr << 32) | lowAddr;
+			break;
+		}
+		case KernelHookType::x64HookType3:
+		{
+			ULONG imm = *(PULONG)((PUCHAR)local_image_base + rva + 1);
+			originalAddr = imm + address + 5;
+			break;
+		}
+		default:
+			break;
 		}
 
 		if (local_image_base != nullptr) {

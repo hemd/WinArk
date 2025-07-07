@@ -133,7 +133,7 @@ public:
 		MSG_WM_SETTEXT(OnSetText)
 		MSG_WM_PASTE(OnPaste)
 		MSG_WM_CHAR(OnChar)
-	END_MSG_MAP()
+		END_MSG_MAP()
 
 
 	LRESULT OnCreate(UINT uMsg, WPARAM, LPARAM) {

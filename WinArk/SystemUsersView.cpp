@@ -34,30 +34,30 @@ CString CSystemUsersView::GetColumnText(HWND, int row, int col) const {
 
 	switch (col)
 	{
-		case 0:
-			return std::format(L"{:2d}", item.UserId).c_str();
-		case 1:
-			return item.UserName.c_str();
-		case 2:
-			return std::format(L"{:2d}", item.NumLogons).c_str();
-		case 3:
-		{
-			std::string time = GetReadableTime(item.LastLogon);
-			return Helpers::StringToWstring(time).c_str();
-			break;
-		}
-		case 4:
-		{
-			std::string time = GetReadableTime(item.LastLogoff);
-			return Helpers::StringToWstring(time).c_str();
-			break;
-		}
-		case 5:
-		{
-			return item.Sid.c_str();
-		}
-		default:
-			break;
+	case 0:
+		return std::format(L"{:2d}", item.UserId).c_str();
+	case 1:
+		return item.UserName.c_str();
+	case 2:
+		return std::format(L"{:2d}", item.NumLogons).c_str();
+	case 3:
+	{
+		std::string time = GetReadableTime(item.LastLogon);
+		return Helpers::StringToWstring(time).c_str();
+		break;
+	}
+	case 4:
+	{
+		std::string time = GetReadableTime(item.LastLogoff);
+		return Helpers::StringToWstring(time).c_str();
+		break;
+	}
+	case 5:
+	{
+		return item.Sid.c_str();
+	}
+	default:
+		break;
 	}
 
 	return L"";

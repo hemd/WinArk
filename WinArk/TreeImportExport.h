@@ -9,7 +9,7 @@ public:
 
 	bool ExportTreeList(const std::map<DWORD_PTR, ImportModuleThunk>& moduleThunk, const std::string processName,
 		DWORD_PTR oep, DWORD_PTR iat, DWORD iatSize);
-	bool ImportTreeList(std::map<DWORD_PTR, ImportModuleThunk>& moduleThunk, 
+	bool ImportTreeList(std::map<DWORD_PTR, ImportModuleThunk>& moduleThunk,
 		DWORD_PTR* pOEP, DWORD_PTR* pIAT, DWORD* pSize);
 
 private:
@@ -22,12 +22,12 @@ private:
 	void AddModuleListToRootElement(tinyxml2::XMLElement* pRootElement,
 		const std::map<DWORD_PTR, ImportModuleThunk>& moduleThunkMap);
 
-	void ParseAllElementModules(tinyxml2::XMLElement* pTargetElement, 
+	void ParseAllElementModules(tinyxml2::XMLElement* pTargetElement,
 		std::map<DWORD_PTR, ImportModuleThunk>& moduleThunkMap);
 	void ParseAllElementImports(tinyxml2::XMLElement* pModuleElement, ImportModuleThunk* pModuleThunk);
 
-	tinyxml2::XMLElement* GetModuleXmlElement(tinyxml2::XMLElement* pParentElement,const ImportModuleThunk* pModuleThunk);
-	tinyxml2::XMLElement* GetImportXmlElement(tinyxml2::XMLElement* pParentElement,const ImportThunk* pThunk);
+	tinyxml2::XMLElement* GetModuleXmlElement(tinyxml2::XMLElement* pParentElement, const ImportModuleThunk* pModuleThunk);
+	tinyxml2::XMLElement* GetImportXmlElement(tinyxml2::XMLElement* pParentElement, const ImportThunk* pThunk);
 
 	bool SaveXmlToFile(tinyxml2::XMLDocument& doc, const WCHAR* pXmlFilePath);
 	bool ReadXmlFile(tinyxml2::XMLDocument& doc, const WCHAR* pXmlFilePath);

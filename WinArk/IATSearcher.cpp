@@ -67,7 +67,7 @@ bool IATSearcher::FindIATAdvanced(DWORD_PTR startAddress, DWORD_PTR* pIAT, DWORD
 	*pIAT = start;
 	iter = iatPointers.end();
 	DWORD_PTR end = *(--iter);
-	
+
 	BOOL isWow64 = FALSE;
 	::IsWow64Process(_hProcess, &isWow64);
 	DWORD pointerSize = 0;
@@ -78,7 +78,7 @@ bool IATSearcher::FindIATAdvanced(DWORD_PTR startAddress, DWORD_PTR* pIAT, DWORD
 		pointerSize = 8;
 	}
 	*pSize = (DWORD)(end - start + pointerSize);
-	
+
 	if (*pSize > (2000000 * pointerSize)) {
 		*pIAT = 0;
 		*pSize = 0;
@@ -158,7 +158,7 @@ DWORD_PTR IATSearcher::FindIATPointer() {
 					}
 				}
 				else {
-					if(_insts[i].flags & FLAG_RIP_RELATIVE)
+					if (_insts[i].flags & FLAG_RIP_RELATIVE)
 						return INSTRUCTION_GET_RIP_TARGET(&_insts[i]);
 				}
 			}
@@ -289,7 +289,7 @@ DWORD_PTR IATSearcher::FindIATStartAddress(DWORD_PTR baseAddress, DWORD_PTR star
 			p64--;
 		}
 	}
-	
+
 
 	return baseAddress;
 }

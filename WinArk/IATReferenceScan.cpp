@@ -27,7 +27,7 @@ int IATReferenceScan::NumberOfDirectImportApisNotInIAT() {
 }
 
 int IATReferenceScan::GetSizeInBytesOfJumpTableInSection() {
-	BYTE pattern[] = { 0xFF,0x25,0x00,0x00,0x00,0x00};
+	BYTE pattern[] = { 0xFF,0x25,0x00,0x00,0x00,0x00 };
 	return NumberOfFoundDirectImports() * sizeof(pattern);
 }
 
@@ -62,7 +62,7 @@ void IATReferenceScan::StartScan(DWORD_PTR imageBase, DWORD_PTR imageSize, DWORD
 
 		section = (DWORD_PTR)((SIZE_T)section + mbi.RegionSize);
 
-	} while (section<(imageBase+imageSize));
+	} while (section < (imageBase + imageSize));
 }
 
 void IATReferenceScan::PatchNewIAT(DWORD_PTR stdImageBase, DWORD_PTR newIATBaseAddress, PEParser* pParser) {
@@ -424,7 +424,7 @@ void IATReferenceScan::FindDirectIATReferencePush(_DInst* pInst) {
 	IATReference ref;
 	ref._type = IAT_REFERENCE_DIRECT_PUSH;
 
-	if(pInst->size >= 5 && pInst->opcode == I_PUSH) {
+	if (pInst->size >= 5 && pInst->opcode == I_PUSH) {
 		ref._targetAddressInIAT = pInst->imm.qword;
 		CheckMemoryRangeAndAddToList(&ref, pInst);
 	}

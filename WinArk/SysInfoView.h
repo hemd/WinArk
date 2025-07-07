@@ -18,7 +18,7 @@ public:
 	void OnUpdate();
 
 	BEGIN_MSG_MAP(CSysInfoView)
-		MESSAGE_HANDLER(WM_CREATE,OnCreate)
+		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		CHAIN_MSG_MAP(CViewBase<CSysInfoView>)
 		CHAIN_MSG_MAP(CVirtualListView<CSysInfoView>)
 	END_MSG_MAP()
@@ -30,8 +30,8 @@ public:
 	LRESULT OnCreate(UINT, WPARAM, LPARAM, BOOL&);
 
 	enum class RowType {
-		Version,TotalRAM,TotalCPUs,BootTime,ProcessorBrand,BootMode,
-		SecureBoot,HVCIStatus,Vendor,Hypervisor,
+		Version, TotalRAM, TotalCPUs, BootTime, ProcessorBrand, BootMode,
+		SecureBoot, HVCIStatus, Vendor, Hypervisor,
 		COUNT,
 	};
 

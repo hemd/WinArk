@@ -7,10 +7,10 @@ class CSystemUsersView :
 	public CViewBase<CSystemUsersView>,
 	public CVirtualListView<CSystemUsersView> {
 public:
-	CSystemUsersView(IMainFrame* frame):CViewBase(frame){}
+	CSystemUsersView(IMainFrame* frame) :CViewBase(frame) {}
 
 	BEGIN_MSG_MAP(CSystemUsersView)
-		MESSAGE_HANDLER(WM_CREATE,OnCreate)
+		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		CHAIN_MSG_MAP(CVirtualListView<CSystemUsersView>)
 		CHAIN_MSG_MAP(CViewBase<CSystemUsersView>)
 	END_MSG_MAP()
@@ -24,7 +24,7 @@ private:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	void Refresh();
-	
+
 	std::string GetReadableTime(DWORD time) const;
 
 private:

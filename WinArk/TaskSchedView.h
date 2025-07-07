@@ -44,16 +44,16 @@ public:
 	BOOL OnRightClickList(HWND, int row, int col, const POINT&);
 
 	BEGIN_MSG_MAP(CTaskSchedView)
-		NOTIFY_CODE_HANDLER(TVN_SELCHANGED,OnTreeSelChanged)
-		NOTIFY_HANDLER(TaskListId,LVN_ITEMCHANGED,OnListItemChanged)
-		MESSAGE_HANDLER(WM_CREATE,OnCreate)
-		MESSAGE_HANDLER(WM_SIZE,OnSize)
-		MESSAGE_HANDLER(WM_BUILD_TASK_SCHED_TREE,OnBuildTree)
-		COMMAND_ID_HANDLER(ID_TASK_ENABLE,OnEnableDisableTask)
-		COMMAND_ID_HANDLER(ID_TASK_RUN,OnRunTask)
-		COMMAND_ID_HANDLER(ID_TASK_STOP,OnStopTask)
-		COMMAND_ID_HANDLER(ID_TASK_DELETE,OnDeleteTask)
-		COMMAND_ID_HANDLER(ID_VIEW_REFRESH,OnViewRefresh)
+		NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnTreeSelChanged)
+		NOTIFY_HANDLER(TaskListId, LVN_ITEMCHANGED, OnListItemChanged)
+		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		MESSAGE_HANDLER(WM_BUILD_TASK_SCHED_TREE, OnBuildTree)
+		COMMAND_ID_HANDLER(ID_TASK_ENABLE, OnEnableDisableTask)
+		COMMAND_ID_HANDLER(ID_TASK_RUN, OnRunTask)
+		COMMAND_ID_HANDLER(ID_TASK_STOP, OnStopTask)
+		COMMAND_ID_HANDLER(ID_TASK_DELETE, OnDeleteTask)
+		COMMAND_ID_HANDLER(ID_VIEW_REFRESH, OnViewRefresh)
 		CHAIN_MSG_MAP(CVirtualListView<CTaskSchedView>)
 	END_MSG_MAP()
 
@@ -87,14 +87,14 @@ public:
 
 private:
 	enum class ColumnType {
-		Name,Status,Triggers,Created,Path,
-		Author,NextRun,LastRun,RunResults,
-		RunningPid,InstanceGuid,CurrentAction
+		Name, Status, Triggers, Created, Path,
+		Author, NextRun, LastRun, RunResults,
+		RunningPid, InstanceGuid, CurrentAction
 	};
 
 	enum class NodeType {
 		None,
-		Folder,TaskSched,RunningTasks,AllTasks
+		Folder, TaskSched, RunningTasks, AllTasks
 	};
 	struct TaskItem {
 		CString Name;

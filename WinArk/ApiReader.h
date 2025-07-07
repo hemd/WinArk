@@ -39,7 +39,7 @@ private:
 	void ParseModule(ModuleInfo* pModule);
 	bool ParseModuleWithProcess(ModuleInfo* pModule);
 	bool ParseExportTable(ModuleInfo* pModule, bool isMapping, bool ownProcess = false);
-	
+
 	ModuleInfo* FindModuleByName(WCHAR* name);
 
 	void FindApiByModuleAndOrdinal(ModuleInfo* pModule, WORD ordinal, DWORD_PTR* pVA, DWORD_PTR* pRVA);

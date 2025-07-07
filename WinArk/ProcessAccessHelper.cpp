@@ -76,7 +76,7 @@ bool ProcessAccessHelper::ReadMemoryFromProcess(DWORD_PTR address, SIZE_T size, 
 	if (!_hProcess) {
 		return false;
 	}
-	
+
 	std::uintptr_t offset = 0;
 	std::uintptr_t requestedSize = size;
 	std::uintptr_t sizeLeftInFirstPage = PAGE_SIZE - (address & (PAGE_SIZE - 1));
@@ -85,7 +85,7 @@ bool ProcessAccessHelper::ReadMemoryFromProcess(DWORD_PTR address, SIZE_T size, 
 	while (readSize)
 	{
 		SIZE_T bytesRead = 0;
-		auto readSuccess = ReadProcessMemory(_hProcess, (PVOID)(address + offset), 
+		auto readSuccess = ReadProcessMemory(_hProcess, (PVOID)(address + offset),
 			(PBYTE)pData + offset, readSize, &bytesRead);
 		DWORD error = ::GetLastError();
 		if (!readSuccess)
@@ -165,7 +165,7 @@ bool ProcessAccessHelper::ReadMemoryPartlyFromProcess(DWORD_PTR address, SIZE_T 
 		do
 		{
 			pAddress = address;
-			if (!VirtualQueryEx(_hProcess, (BYTE*)pAddress, &mbi, sizeof(mbi))){
+			if (!VirtualQueryEx(_hProcess, (BYTE*)pAddress, &mbi, sizeof(mbi))) {
 				break;
 			}
 			bytesToRead = mbi.RegionSize;
@@ -320,7 +320,7 @@ LPVOID ProcessAccessHelper::CreateFileMappingViewFull(const WCHAR* filePath)
 }
 
 LPVOID ProcessAccessHelper::CreateFileMappingView(const WCHAR* filePath, DWORD accessFile, DWORD protect, DWORD accessMap) {
-	HANDLE hFile = ::CreateFile(filePath, accessFile, FILE_SHARE_READ, nullptr, OPEN_EXISTING,0, nullptr);
+	HANDLE hFile = ::CreateFile(filePath, accessFile, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
 	if (hFile == INVALID_HANDLE_VALUE)
 		return nullptr;
 
@@ -402,7 +402,7 @@ bool ProcessAccessHelper::GetProcessModules(HANDLE hProcess, std::vector<ModuleI
 			continue;
 		if (!_wcsnicmp(name.c_str(), L"EXT-", 4))
 			continue;
-		
+
 
 		module._modBaseAddr = (DWORD_PTR)info.get()->Base;
 		module._modBaseSize = info.get()->ModuleSize;

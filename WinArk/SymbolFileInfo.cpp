@@ -31,7 +31,7 @@ bool SymbolFileInfo::SymDownloadSymbol(std::wstring localPath) {
 	url += Helpers::WstringToString(symbolUrl);
 	std::wstring fileName = path + L"\\" + _pdbFile.GetString();
 	bool isExist = std::filesystem::is_regular_file(fileName);
-	
+
 	if (isExist) {
 		// If the symbols pdb download by SDM.exe, we just skip the check.
 		std::wstring sdm = localPath + L"\\sdm.json";
@@ -58,7 +58,7 @@ bool SymbolFileInfo::SymDownloadSymbol(std::wstring localPath) {
 			return true;
 		},
 		nullptr);
-	
+
 	bool bOk = result == downslib_error::ok ? true : false;
 	if (!bOk) {
 		MessageBox(NULL, L"Failed init symbols,\r\nWinArk will exit...\r\n", L"WinArk", MB_ICONERROR);
@@ -67,12 +67,12 @@ bool SymbolFileInfo::SymDownloadSymbol(std::wstring localPath) {
 	return bOk;
 }
 
-bool SymbolFileInfo::GetPdbSignature(ULONG_PTR imageBase,PIMAGE_DEBUG_DIRECTORY entry) {
+bool SymbolFileInfo::GetPdbSignature(ULONG_PTR imageBase, PIMAGE_DEBUG_DIRECTORY entry) {
 	if (entry->SizeOfData < sizeof(CV_INFO_PDB20))
 		return false;
 
 	ULONG_PTR offset = 0;
-	
+
 	offset = entry->PointerToRawData;
 	auto cvData = (unsigned char*)(imageBase + offset);
 	auto signature = *(DWORD*)cvData;
@@ -130,9 +130,9 @@ downslib_error SymbolFileInfo::Download(std::string url, std::wstring fileName, 
 		return downslib_error::incomplete;
 	}
 
-    if (cb) {
-        cb(userdata, 100, 100);
-    }
-    fileStream.close();
-    return downslib_error::ok;
+	if (cb) {
+		cb(userdata, 100, 100);
+	}
+	fileStream.close();
+	return downslib_error::ok;
 }

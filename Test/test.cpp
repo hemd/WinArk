@@ -27,7 +27,7 @@ struct FZG
 };
 
 
-extern "C" 
+extern "C"
 NTSTATUS
 DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath) {
 	UNREFERENCED_PARAMETER(RegistryPath);
@@ -52,21 +52,21 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath) {
 		RtlZeroMemory(item, sizeof(FZG));
 		RtlZeroMemory(item2, sizeof(FZG));
 
-		
+
 
 		item->age = 18;
 		item->height = 183;
 		item->name = "ShuaiGeZengZhenDeShuai";
 		UINT64 hash = HashUlongPtr((UINT64)item->name);
 		item->bucket.Key = hash;
-		
+
 		item2->age = 19;
 		item2->height = 182;
 		item2->name = "ShuaiGeCunZhenDeShuai";
 		UINT64 hash2 = HashUlongPtr((UINT64)item2->name);
 		item2->bucket.Key = hash2;
 
-		
+
 		HashTableInsert(&g_Table, &item->bucket);
 		HashTableInsert(&g_Table, &item2->bucket);
 
@@ -93,11 +93,11 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath) {
 			HashTableIterRemove(&Iterator);
 			//KdPrint(("Iterator %d %d %s", result->age, result->height, result->name));
 			//ExFreePoolWithTag(result, 'meti');
-			
+
 		}
 	} while (FALSE);
 
-	
+
 
 	PSINGLE_LIST_ENTRY p = HashTableCleanup(&g_Table);
 	if (p) {

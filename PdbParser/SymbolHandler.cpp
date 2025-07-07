@@ -62,7 +62,7 @@ ImagehlpSymbol::~ImagehlpSymbol() {
 	::free(m_Symbol);
 }
 
-SymbolHandler::SymbolHandler(HANDLE hProcess, PCSTR searchPath,DWORD symOptions){
+SymbolHandler::SymbolHandler(HANDLE hProcess, PCSTR searchPath, DWORD symOptions) {
 	m_hProcess = hProcess;
 }
 
@@ -71,7 +71,7 @@ SymbolHandler::~SymbolHandler() {
 		::CloseHandle(m_hProcess);
 }
 
-ULONG64 SymbolHandler::LoadSymbolsForModule(PCSTR imageName, PCSTR moduleName, DWORD64 baseAddress,DWORD dllSize) {
+ULONG64 SymbolHandler::LoadSymbolsForModule(PCSTR imageName, PCSTR moduleName, DWORD64 baseAddress, DWORD dllSize) {
 	_address = SymLoadModuleEx(m_hProcess, nullptr, imageName, nullptr, baseAddress, dllSize, nullptr, 0);
 	return _address;
 }
@@ -92,9 +92,9 @@ std::unique_ptr<SymbolInfo> SymbolHandler::GetSymbolFromName(PCSTR name) {
 }
 
 // https://www.cnblogs.com/M-Mr/p/3970003.html
-DWORD SymbolHandler::GetStructMemberOffset(std::string name,std::string memberName) {
+DWORD SymbolHandler::GetStructMemberOffset(std::string name, std::string memberName) {
 	DWORD offset = -1;
-	
+
 	auto symbol = std::make_unique<SymbolInfo>();
 	auto info = symbol->GetSymbolInfo();
 	SymGetTypeFromName(m_hProcess, _address, name.c_str(), symbol->GetSymbolInfo());
@@ -129,7 +129,7 @@ DWORD SymbolHandler::GetStructMemberOffset(std::string name,std::string memberNa
 
 	free(pMemberInfo);
 	free(childrenParams);
-	
+
 	return offset;
 }
 
@@ -189,7 +189,7 @@ DWORD SymbolHandler::GetStructMemberSize(std::string name, std::string memberNam
 		SymFromIndex(m_hProcess, _address, child, pMemberInfo);
 		if (!::strcmp(pMemberInfo->Name, memberName.c_str())) {
 			size = pMemberInfo->Size;
-			
+
 			break;
 		}
 	}
@@ -247,7 +247,7 @@ ULONG_PTR SymbolHandler::GetSymbolAddressFromName(PCSTR name) {
 	if (!success) {
 		DWORD error = ::GetLastError();
 		std::string value = to_string(error);
-		OutputDebugStringA(value.c_str());	
+		OutputDebugStringA(value.c_str());
 	}
 	return info->Address;
 }

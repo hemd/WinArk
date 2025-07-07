@@ -485,7 +485,7 @@ DWORD PEParser::GetSectionHeaderBasedSizeOfImage() {
 	DWORD lastVirtualOffset = 0, lastVirtualSize = 0;
 
 	for (WORD i = 0; i < GetSectionCount(); i++) {
-		if ((_PESections[i]._sectionHeader.VirtualAddress + _PESections[i]._sectionHeader.Misc.VirtualSize) 
+		if ((_PESections[i]._sectionHeader.VirtualAddress + _PESections[i]._sectionHeader.Misc.VirtualSize)
 	> (lastVirtualOffset + lastVirtualSize)) {
 			lastVirtualOffset = _PESections[i]._sectionHeader.VirtualAddress;
 			lastVirtualSize = _PESections[i]._sectionHeader.Misc.VirtualSize;

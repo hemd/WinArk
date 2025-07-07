@@ -5,7 +5,7 @@
 
 ColumnManager::~ColumnManager() = default;
 
-bool ColumnManager::CopyTo(ColumnManager & other) const {
+bool ColumnManager::CopyTo(ColumnManager& other) const {
 	if (other.GetCount() != GetCount())
 		return false;
 
@@ -78,7 +78,7 @@ void ColumnManager::UpdateColumns() {
 			if (IsVisible(i)) {
 				auto& info = GetColumn(i);
 				// make visible - add column
-				int c = m_ListView.InsertColumn(header.GetItemCount(), info.Name, info.Format, 
+				int c = m_ListView.InsertColumn(header.GetItemCount(), info.Name, info.Format,
 					info.DefaultWidth);
 				hdi.lParam = i;
 				header.SetItem(c, &hdi);

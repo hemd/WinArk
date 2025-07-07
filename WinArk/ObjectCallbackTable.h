@@ -46,11 +46,11 @@ public:
 		MESSAGE_HANDLER(WM_SYSKEYDOWN, OnSysKeyDown)
 		COMMAND_ID_HANDLER(ID_OB_CALLBACK_REFRESH, OnRefresh)
 		COMMAND_ID_HANDLER(ID_OB_CALLBACK_REMOVE, OnRemove)
-		COMMAND_ID_HANDLER(ID_OB_CALLBACK_ENABLE,OnEnable)
-		COMMAND_ID_HANDLER(ID_OB_CALLBACK_DISABLE,OnDisable)
+		COMMAND_ID_HANDLER(ID_OB_CALLBACK_ENABLE, OnEnable)
+		COMMAND_ID_HANDLER(ID_OB_CALLBACK_DISABLE, OnDisable)
 		COMMAND_ID_HANDLER(ID_OB_CALLBACK_COPY, OnCopy)
 		COMMAND_ID_HANDLER(ID_OB_CALLBACK_EXPORT, OnExport)
-		COMMAND_ID_HANDLER(ID_OB_CALLBACK_REMOVE_BY_NAME,OnRemoveByCompanyName)
+		COMMAND_ID_HANDLER(ID_OB_CALLBACK_REMOVE_BY_NAME, OnRemoveByCompanyName)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
@@ -79,7 +79,7 @@ public:
 	LRESULT OnExport(WORD, WORD, HWND, BOOL&);
 
 	enum class ObCallbackColumn {
-		CallbackEntry,RegisterarionHandle,Type,Enabled,PreOperation,PostOperation,Opeartions,Company,ModuleName
+		CallbackEntry, RegisterarionHandle, Type, Enabled, PreOperation, PostOperation, Opeartions, Company, ModuleName
 	};
 
 	PCWSTR TypeToString(ObjectCallbackType type);

@@ -27,7 +27,7 @@ static bool GetProcessPeb(HANDLE hProcess, PPEB peb) {
 	ULONG len = 0;
 	PROCESS_BASIC_INFORMATION info;
 	DWORD status = ::NtQueryInformationProcess(hProcess, ProcessBasicInformation, &info, sizeof(info), &len);
-	if(!NT_SUCCESS(status))
+	if (!NT_SUCCESS(status))
 		return false;
 
 	if (info.PebBaseAddress == nullptr)
@@ -212,7 +212,7 @@ bool Process::Resume() {
 }
 
 bool Process::IsImmersive() const noexcept {
-	using PIsImmersiveProcess = BOOL (WINAPI*) (HANDLE);
+	using PIsImmersiveProcess = BOOL(WINAPI*) (HANDLE);
 	// Determines whether the process belongs to a Windows Store app.
 	if (IsWindows8OrGreater()) {
 		PIsImmersiveProcess pIsImmersiveProcess = (PIsImmersiveProcess)GetProcAddress(GetModuleHandle(L"user32.dll"), "IsImmersiveProcess");
@@ -225,13 +225,13 @@ bool Process::IsProtected() const {
 	PROCESS_EXTENDED_BASIC_INFORMATION info;
 	if (!GetExtendedInfo(GetHandle(), &info))
 		return false;
-	
+
 	return info.IsProtectedProcess ? true : false;
 }
 
 bool Process::IsSecure() const {
 	PROCESS_EXTENDED_BASIC_INFORMATION info;
-	if(!GetExtendedInfo(GetHandle(),&info))
+	if (!GetExtendedInfo(GetHandle(), &info))
 		return false;
 
 	return info.IsSecureProcess ? true : false;
@@ -271,7 +271,7 @@ bool Process::IsManaged() const {
 	int count = min(_countof(hModule), needed / sizeof(HMODULE));
 
 	for (int i = 0; i < count; i++) {
-		if(::GetModuleFileNameEx(hProcess.get(),hModule[i],filename,MAX_PATH)==0)
+		if (::GetModuleFileNameEx(hProcess.get(), hModule[i], filename, MAX_PATH) == 0)
 			continue;
 		if (::_wcsicmp(filename, sysPath) == 0)
 			return true;// 是否是托管程序

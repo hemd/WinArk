@@ -82,7 +82,7 @@ IntegrityLevel Token::GetIntegrityLevel() const {
 		return IntegrityLevel::Error;
 
 	auto p = (TOKEN_MANDATORY_LABEL*)buffer;
-	return (IntegrityLevel)*GetSidSubAuthority(p->Label.Sid, *GetSidSubAuthorityCount(p->Label.Sid)-1);
+	return (IntegrityLevel)*GetSidSubAuthority(p->Label.Sid, *GetSidSubAuthorityCount(p->Label.Sid) - 1);
 }
 
 DWORD Token::GetSessionId() const {
@@ -142,7 +142,7 @@ std::vector<TokenPrivilege> Token::EnumPrivileges() const {
 		auto& p = data->Privileges[i];
 		priv.Privilege = p.Luid;
 		len = _countof(name);
-		if(::LookupPrivilegeName(nullptr, &p.Luid, name, &len)) {
+		if (::LookupPrivilegeName(nullptr, &p.Luid, name, &len)) {
 			priv.Name = name;
 			if (::LookupPrivilegeDisplayName(nullptr, priv.Name.c_str(),
 				displayName, &len, &language))

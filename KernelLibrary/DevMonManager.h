@@ -20,7 +20,7 @@ NTSTATUS NTAPI ObReferenceObjectByName(
 	_In_ POBJECT_TYPE ObjectType,
 	_In_ KPROCESSOR_MODE AccessMode,
 	_Inout_opt_ PVOID ParseContext,
-	_Out_ PVOID * Object);
+	_Out_ PVOID* Object);
 
 NTSTATUS GetDataFromIrp(PDEVICE_OBJECT DeviceObject, PIRP Irp, PIO_STACK_LOCATION stack, IrpMajorCode code, PVOID buffer, ULONG size, bool output = false);
 NTSTATUS DriverMonGenericDispatch(PDEVICE_OBJECT, PIRP);
@@ -47,7 +47,7 @@ struct DeviceExtension {
 class DevMonManager {
 public:
 	void Init(PDRIVER_OBJECT DriverObject);
-	
+
 	NTSTATUS AddDevice(PCWSTR name);
 	int FindDevice(PCWSTR name);
 	int FindDevice(PDEVICE_OBJECT DeviceObject);

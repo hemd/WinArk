@@ -105,14 +105,14 @@ LRESULT CObjectCallbackTable::OnSysKeyDown(UINT uMsg, WPARAM wParam, LPARAM lPar
 PCWSTR CObjectCallbackTable::TypeToString(ObjectCallbackType type) {
 	switch (type)
 	{
-		case ObjectCallbackType::Process:
-			return L"Process";
-		case ObjectCallbackType::Thread:
-			return L"Thread";
-		case ObjectCallbackType::Desktop:
-			return L"Desktop";
-		default:
-			break;
+	case ObjectCallbackType::Process:
+		return L"Process";
+	case ObjectCallbackType::Thread:
+		return L"Thread";
+	case ObjectCallbackType::Desktop:
+		return L"Desktop";
+	default:
+		break;
 	}
 
 	return L"";
@@ -141,70 +141,70 @@ int CObjectCallbackTable::ParseTableEntry(CString& s, char& mask, int& select, O
 
 	switch (static_cast<ObCallbackColumn>(column))
 	{
-		case ObCallbackColumn::RegisterarionHandle:
-			s.Format(L"0x%p", info.RegistrationHandle);
-			break;
-		case ObCallbackColumn::CallbackEntry:
-			s.Format(L"0x%p", info.CallbackEntry);
-			break;
-		case ObCallbackColumn::Type:
-			s = TypeToString(info.Type);
-			break;
-		case ObCallbackColumn::Enabled:
-			s = info.Enabled ? L"Enabled" : L"Disabled";
-			break;
-		case ObCallbackColumn::PreOperation:
-		{
-			auto& symbols = SymbolManager::Get();
-			DWORD64 offset = 0;
-			auto symbol = symbols.GetSymbolFromAddress(0, (DWORD64)info.PreOperation, &offset);
-			CStringA text;
-			if (symbol) {
-				auto sym = symbol->GetSymbolInfo();
-				if (offset != 0) {
-					text.Format("%s!%s+0x%X", symbol->ModuleInfo.ModuleName, sym->Name, (DWORD)offset);
-				}
-				else
-					text.Format("%s!%s", symbol->ModuleInfo.ModuleName, sym->Name);
-				std::string details = text.GetString();
-				std::wstring wdetails = Helpers::StringToWstring(details);
-				s.Format(L"0x%p (%s)", info.PreOperation, wdetails.c_str());
+	case ObCallbackColumn::RegisterarionHandle:
+		s.Format(L"0x%p", info.RegistrationHandle);
+		break;
+	case ObCallbackColumn::CallbackEntry:
+		s.Format(L"0x%p", info.CallbackEntry);
+		break;
+	case ObCallbackColumn::Type:
+		s = TypeToString(info.Type);
+		break;
+	case ObCallbackColumn::Enabled:
+		s = info.Enabled ? L"Enabled" : L"Disabled";
+		break;
+	case ObCallbackColumn::PreOperation:
+	{
+		auto& symbols = SymbolManager::Get();
+		DWORD64 offset = 0;
+		auto symbol = symbols.GetSymbolFromAddress(0, (DWORD64)info.PreOperation, &offset);
+		CStringA text;
+		if (symbol) {
+			auto sym = symbol->GetSymbolInfo();
+			if (offset != 0) {
+				text.Format("%s!%s+0x%X", symbol->ModuleInfo.ModuleName, sym->Name, (DWORD)offset);
 			}
 			else
-				s.Format(L"0x%p", info.PreOperation);
-			break;
+				text.Format("%s!%s", symbol->ModuleInfo.ModuleName, sym->Name);
+			std::string details = text.GetString();
+			std::wstring wdetails = Helpers::StringToWstring(details);
+			s.Format(L"0x%p (%s)", info.PreOperation, wdetails.c_str());
 		}
-		case ObCallbackColumn::PostOperation:
-		{
-			auto& symbols = SymbolManager::Get();
-			DWORD64 offset = 0;
-			auto symbol = symbols.GetSymbolFromAddress(0, (DWORD64)info.PostOperation, &offset);
-			CStringA text;
-			if (symbol) {
-				auto sym = symbol->GetSymbolInfo();
-				if (offset != 0) {
-					text.Format("%s!%s+0x%X", symbol->ModuleInfo.ModuleName, sym->Name, (DWORD)offset);
-				}
-				else
-					text.Format("%s!%s", symbol->ModuleInfo.ModuleName, sym->Name);
-				std::string details = text.GetString();
-				std::wstring wdetails = Helpers::StringToWstring(details);
-				s.Format(L"0x%p (%s)", info.PostOperation, wdetails.c_str());
+		else
+			s.Format(L"0x%p", info.PreOperation);
+		break;
+	}
+	case ObCallbackColumn::PostOperation:
+	{
+		auto& symbols = SymbolManager::Get();
+		DWORD64 offset = 0;
+		auto symbol = symbols.GetSymbolFromAddress(0, (DWORD64)info.PostOperation, &offset);
+		CStringA text;
+		if (symbol) {
+			auto sym = symbol->GetSymbolInfo();
+			if (offset != 0) {
+				text.Format("%s!%s+0x%X", symbol->ModuleInfo.ModuleName, sym->Name, (DWORD)offset);
 			}
 			else
-				s.Format(L"0x%p", info.PostOperation);
-			break;
+				text.Format("%s!%s", symbol->ModuleInfo.ModuleName, sym->Name);
+			std::string details = text.GetString();
+			std::wstring wdetails = Helpers::StringToWstring(details);
+			s.Format(L"0x%p (%s)", info.PostOperation, wdetails.c_str());
 		}
-			
-		case ObCallbackColumn::Opeartions:
-			s = DecodeOperations(info.Operations);
-			break;
-		case ObCallbackColumn::Company:
-			s = info.Company.c_str();
-			break;
-		case ObCallbackColumn::ModuleName:
-			s = Helpers::StringToWstring(info.Module).c_str();
-			break;
+		else
+			s.Format(L"0x%p", info.PostOperation);
+		break;
+	}
+
+	case ObCallbackColumn::Opeartions:
+		s = DecodeOperations(info.Operations);
+		break;
+	case ObCallbackColumn::Company:
+		s = info.Company.c_str();
+		break;
+	case ObCallbackColumn::ModuleName:
+		s = Helpers::StringToWstring(info.Module).c_str();
+		break;
 	}
 
 	return s.GetLength();
@@ -213,10 +213,10 @@ int CObjectCallbackTable::ParseTableEntry(CString& s, char& mask, int& select, O
 bool CObjectCallbackTable::CompareItems(const ObjectCallbackInfo& s1, const ObjectCallbackInfo& s2, int col, bool asc) {
 	switch (static_cast<ObCallbackColumn>(col))
 	{
-		case ObCallbackColumn::Company:
-			return SortHelper::SortStrings(s1.Company, s2.Company, asc);
-		default:
-			break;
+	case ObCallbackColumn::Company:
+		return SortHelper::SortStrings(s1.Company, s2.Company, asc);
+	default:
+		break;
 	}
 	return false;
 }

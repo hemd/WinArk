@@ -243,7 +243,7 @@ typedef struct _DBGKM_UNLOAD_DLL
 typedef struct _DBGKM_ERROR_MSG {
 	EXCEPTION_RECORD ExceptionRecord;
 	SECTION_IMAGE_INFORMATION ImageInfo;
-	union 
+	union
 	{
 		ULONG Flags;
 		struct {
@@ -253,7 +253,7 @@ typedef struct _DBGKM_ERROR_MSG {
 			ULONG SpareBits : 29;
 		};
 	};
-}DBGKM_ERROR_MSG,*PDBGKM_ERROR_MSG;
+}DBGKM_ERROR_MSG, * PDBGKM_ERROR_MSG;
 
 //
 // LPC Port Message
@@ -374,14 +374,14 @@ typedef struct _DBGUI_WAIT_STATE_CHANGE
 typedef enum _DEBUG_OBJECT_INFORMATION_CLASS {
 	DebugObjectFlagsInformation = 1,
 	DebugObjectMaximumInfomation
-}DEBUG_OBJECT_INFORMATION_CLASS, *PDEBUG_OBJECT_INFORMATION_CLASS;
+}DEBUG_OBJECT_INFORMATION_CLASS, * PDEBUG_OBJECT_INFORMATION_CLASS;
 
 #if defined(_AMD64_)
 FORCEINLINE
 VOID
 ProbeForWriteUlong(
 	IN PULONG Address
-){
+) {
 	if (Address >= (ULONG* const)MM_USER_PROBE_ADDRESS) {
 		Address = (ULONG* const)MM_USER_PROBE_ADDRESS;
 	}
@@ -446,9 +446,9 @@ typedef struct _PEB_LDR_DATA                            // 9 elements, 0x58 byte
 	ULONG32      Length;
 	UINT8        Initialized;
 	VOID* SsHandle;
-	struct _LIST_ENTRY InLoadOrderModuleList;          
-	struct _LIST_ENTRY InMemoryOrderModuleList;        
-	struct _LIST_ENTRY InInitializationOrderModuleList; 
+	struct _LIST_ENTRY InLoadOrderModuleList;
+	struct _LIST_ENTRY InMemoryOrderModuleList;
+	struct _LIST_ENTRY InInitializationOrderModuleList;
 	VOID* EntryInProgress;
 	UINT8        ShutdownInProgress;
 	VOID* ShutdownThreadId;
@@ -706,7 +706,7 @@ typedef struct _PS_SYSTEM_DLL {
 
 typedef struct _WOW64_PROCESS {
 	PVOID Wow64;
-}WOW64_PROCESS,*PWOW64_PROCESS;
+}WOW64_PROCESS, * PWOW64_PROCESS;
 
 #if defined(_AMD64_)
 

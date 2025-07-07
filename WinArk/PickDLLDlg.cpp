@@ -2,7 +2,7 @@
 #include "PickDLLDlg.h"
 #include "Architecture.h"
 
-CPickDLLDlg::CPickDLLDlg(std::vector<ModuleInfo>& moduleList):_moduleList(moduleList)
+CPickDLLDlg::CPickDLLDlg(std::vector<ModuleInfo>& moduleList) :_moduleList(moduleList)
 {
 }
 
@@ -107,18 +107,18 @@ int CALLBACK CPickDLLDlg::ListViewCompareFunc(LPARAM lParam1, LPARAM lParam2, LP
 	int diff = 0;
 	switch (column)
 	{
-		case Name:
-			diff = _wcsicmp(p1->GetFileName(), p2->GetFileName());
-			break;
-		case ImageBase:
-			diff = p1->_modBaseAddr < p2->_modBaseAddr ? -1 : 1;
-			break;
-		case ImageSize:
-			diff = p1->_modBaseSize < p2->_modBaseSize ? -1 : 1;
-			break;
-		case Path:
-			diff = _wcsicmp(p1->_fullPath, p2->_fullPath);
-			break;
+	case Name:
+		diff = _wcsicmp(p1->GetFileName(), p2->GetFileName());
+		break;
+	case ImageBase:
+		diff = p1->_modBaseAddr < p2->_modBaseAddr ? -1 : 1;
+		break;
+	case ImageSize:
+		diff = p1->_modBaseSize < p2->_modBaseSize ? -1 : 1;
+		break;
+	case Path:
+		diff = _wcsicmp(p1->_fullPath, p2->_fullPath);
+		break;
 	}
 
 	return ascending ? diff : -diff;

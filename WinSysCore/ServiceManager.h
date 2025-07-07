@@ -69,11 +69,11 @@ namespace WinSys {
 		bool DelayedAutoStart;
 	};
 
-	class ServiceManager final abstract {
+	class ServiceManager final abstract{
 		friend class Service;
 	public:
 		static std::vector<ServiceInfo> EnumServices(ServiceEnumType enumType, ServiceEnumState enumState = ServiceEnumState::All);
-		
+
 		static std::vector<DriverInfo> EnumServices(ServiceEnumType enumType, ServiceEnumState enumState, bool service = false);
 
 
@@ -92,7 +92,7 @@ namespace WinSys {
 		static Sid GetServiceSid(const wchar_t* name);
 
 	private:
-		static wil::unique_schandle OpenServiceHandle(const std::wstring& name, ServiceAccessMask mask = 
-		ServiceAccessMask::QueryConfig|ServiceAccessMask::QueryStatus);
+		static wil::unique_schandle OpenServiceHandle(const std::wstring& name, ServiceAccessMask mask =
+		ServiceAccessMask::QueryConfig | ServiceAccessMask::QueryStatus);
 	};
 }

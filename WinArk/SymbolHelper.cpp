@@ -35,7 +35,7 @@ void SymbolHelper::Init() {
 	DWORD size = Helpers::GetWin32kImageSize();
 
 	std::string pdbPath, pdbName;
-	std::wstring fileName =L"win32k.sys";
+	std::wstring fileName = L"win32k.sys";
 
 	GetPdbFile(fileName, pdbPath, pdbName);
 
@@ -76,7 +76,7 @@ void SymbolHelper::Init() {
 
 	void* flgmgrBase = Helpers::GetKernelModuleBase("fltmgr.sys");
 	size = Helpers::GetKernelModuleImageSize("fltmgr.sys");
-	
+
 	fileName = L"drivers\\fltmgr.sys";
 	GetPdbFile(fileName, pdbPath, pdbName);
 	pdbFile = pdbPath + "\\" + pdbName;
@@ -94,7 +94,7 @@ void SymbolHelper::Init() {
 
 	void* ciBase = Helpers::GetKernelModuleBase("ci.dll");
 	size = Helpers::GetKernelModuleImageSize("ci.dll");
-	
+
 	fileName = L"ci.dll";
 	GetPdbFile(fileName, pdbPath, pdbName);
 	pdbFile = pdbPath + "\\" + pdbName;

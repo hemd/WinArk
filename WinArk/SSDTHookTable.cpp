@@ -118,24 +118,24 @@ int CSSDTHookTable::ParseTableEntry(CString& s, char& mask, int& select, SystemS
 	// Number, Name, OrgAddress, HookType, CurAddress, TargetModule
 	switch (column)
 	{
-		case 0:
-			s.Format(L"%d (0x%-x)", info.ServiceNumber, info.ServiceNumber);
-			break;
-		case 1:
-			s = Helpers::StringToWstring(info.ServiceFunctionName).c_str();
-			break;
-		case 2:
-			s.Format(L"0x%p", info.OriginalAddress);
-			break;
-		case 3:
-			s = Helpers::StringToWstring(info.HookType).c_str();
-			break;
-		case 4:
-			s.Format(L"0x%p", info.CurrentAddress);
-			break;
-		case 5:
-			s = Helpers::StringToWstring(info.TargetModule).c_str();
-			break;
+	case 0:
+		s.Format(L"%d (0x%-x)", info.ServiceNumber, info.ServiceNumber);
+		break;
+	case 1:
+		s = Helpers::StringToWstring(info.ServiceFunctionName).c_str();
+		break;
+	case 2:
+		s.Format(L"0x%p", info.OriginalAddress);
+		break;
+	case 3:
+		s = Helpers::StringToWstring(info.HookType).c_str();
+		break;
+	case 4:
+		s.Format(L"0x%p", info.CurrentAddress);
+		break;
+	case 5:
+		s = Helpers::StringToWstring(info.TargetModule).c_str();
+		break;
 	}
 
 	return s.GetLength();
@@ -181,7 +181,7 @@ ULONG_PTR CSSDTHookTable::GetOrignalAddress(DWORD number) {
 			return true;
 		}
 		return false;
-	};
+		};
 	static bool use4bytes = CheckAddressMethod();
 	if (use4bytes) {
 		auto pEntry = (ULONG*)((char*)_fileMapVA + rva);

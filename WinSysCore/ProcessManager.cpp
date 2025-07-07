@@ -92,7 +92,7 @@ struct ProcessManager::Impl {
 uint32_t ProcessManager::Impl::_totalProcessors = ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
 bool ProcessManager::Impl::_isElevated = Process::OpenById(::GetCurrentProcessId())->IsElevated();
 
-ProcessManager::ProcessManager() :_impl(std::make_unique<Impl>()){ }
+ProcessManager::ProcessManager() :_impl(std::make_unique<Impl>()) {}
 ProcessManager::~ProcessManager() = default;
 
 std::shared_ptr<ProcessInfo> ProcessManager::GetProcessInfo(int index) const {
@@ -162,7 +162,7 @@ std::wstring ProcessManager::GetProcessNameById(uint32_t pid) const {
 	if (pid == 0)
 		return L"";
 	auto pi = GetProcessById(pid);
-	return pi ? pi->GetImageName(): L"";
+	return pi ? pi->GetImageName() : L"";
 }
 
 size_t ProcessManager::EnumProcessAndThreads(uint32_t pid) {
@@ -197,7 +197,7 @@ size_t ProcessManager::Impl::EnumProcesses(bool includeThreads, uint32_t pid) {
 	ULONG len;
 
 	// get timing info as close as possible to the API call
-	
+
 	LARGE_INTEGER ticks;
 	::QueryPerformanceCounter(&ticks);
 	auto delta = ticks.QuadPart - _prevTicks.QuadPart;	// Δ用来表示增量符号
@@ -324,8 +324,8 @@ std::shared_ptr<ProcessInfo> ProcessManager::Impl::BuildProcessInfo(
 		if ((DWORD)info->UniqueProcessId > 0) {
 			pi->EProcess = DriverHelper::GetEprocess(info->UniqueProcessId);
 		}
-		HANDLE hProcess = DriverHelper::OpenProcess(HandleToUlong(info->UniqueProcessId), 
-			PROCESS_VM_READ|PROCESS_QUERY_INFORMATION);
+		HANDLE hProcess = DriverHelper::OpenProcess(HandleToUlong(info->UniqueProcessId),
+			PROCESS_VM_READ | PROCESS_QUERY_INFORMATION);
 		if (hProcess != NULL) {
 			pi->ImageBase = WinSys::Process::GetImageBaseAddress(hProcess);
 			if (pi->ImageBase != 0) {

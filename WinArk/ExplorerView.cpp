@@ -2,7 +2,7 @@
 #include "ExplorerView.h"
 #include "DriverHelper.h"
 
-LRESULT CExplorerView::OnCreate(UINT, WPARAM, LPARAM, BOOL&){
+LRESULT CExplorerView::OnCreate(UINT, WPARAM, LPARAM, BOOL&) {
 	m_WndSplitter.Create(m_hWnd, rcDefault, nullptr,
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0);
 
@@ -16,7 +16,7 @@ LRESULT CExplorerView::OnCreate(UINT, WPARAM, LPARAM, BOOL&){
 		LVS_REPORT | LVS_AUTOARRANGE | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS,
 		WS_EX_CLIENTEDGE);
 	m_WndListView.SetExtendedListViewStyle(LVS_EX_TRACKSELECT | LVS_EX_ONECLICKACTIVATE);
-		
+
 	InitViews();
 
 	m_WndSplitter.SetSplitterPanes(m_WndTreeView, m_WndListView);
@@ -36,7 +36,7 @@ LRESULT CExplorerView::OnCreate(UINT, WPARAM, LPARAM, BOOL&){
 	return 0;
 }
 
-void CExplorerView::InitViews(){
+void CExplorerView::InitViews() {
 	// Get Desktop folder
 	CShellItemIDList spidl;
 	HRESULT hRet = ::SHGetSpecialFolderLocation(m_hWnd, CSIDL_DESKTOP, &spidl);
@@ -85,7 +85,7 @@ HRESULT CExplorerView::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq, HTRE
 		return E_POINTER;
 
 	CComPtr<IEnumIDList> spIDList;
-	HRESULT hr = lpsf->EnumObjects(m_hWnd, SHCONTF_FOLDERS | SHCONTF_NONFOLDERS| SHCONTF_INCLUDEHIDDEN, &spIDList);
+	HRESULT hr = lpsf->EnumObjects(m_hWnd, SHCONTF_FOLDERS | SHCONTF_NONFOLDERS | SHCONTF_INCLUDEHIDDEN, &spIDList);
 	if (FAILED(hr))
 		return hr;
 
@@ -98,7 +98,7 @@ HRESULT CExplorerView::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq, HTRE
 	TVITEM tvi = { 0 };				// TreeView Item
 	TVINSERTSTRUCT tvins = { 0 };	// TreeView Insert Struct
 	HTREEITEM hPrev = nullptr;		// Previous Item Add
-	
+
 	// Hourglass on
 	CWaitCursor wait;
 
@@ -118,7 +118,7 @@ HRESULT CExplorerView::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq, HTRE
 			// Shell File Get Attributes Options
 			if (attrs & SFGAO_FOLDER) {
 				tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-				
+
 				if (attrs & SFGAO_HASSUBFOLDER) {
 					// This item has sub-folders, so let's put the + in the TreeView.
 					// The first time the user clicks on the item, we'll populate the
@@ -188,7 +188,7 @@ LRESULT CExplorerView::OnTVSelChanged(int, LPNMHDR pnmh, BOOL&) {
 
 		if (m_WndListView.GetItemCount() > 0)
 			m_WndListView.DeleteAllItems();
-		
+
 		FillListView(lptvid, spFolder);
 
 		WCHAR psz[MAX_PATH] = { 0 };
@@ -210,7 +210,7 @@ BOOL CExplorerView::FillListView(LPTVITEMDATA lptvid, LPSHELLFOLDER pShellFolder
 
 	CComPtr<IEnumIDList> spEnumIDList;
 	HRESULT hr = pShellFolder->EnumObjects(m_WndListView.GetParent(),
-		SHCONTF_FOLDERS | SHCONTF_NONFOLDERS| SHCONTF_INCLUDEHIDDEN, &spEnumIDList);
+		SHCONTF_FOLDERS | SHCONTF_NONFOLDERS | SHCONTF_INCLUDEHIDDEN, &spEnumIDList);
 	if (FAILED(hr))
 		return FALSE;
 
@@ -260,7 +260,7 @@ BOOL CExplorerView::FillListView(LPTVITEMDATA lptvid, LPSHELLFOLDER pShellFolder
 		m_WndListView.AddItem(n, 2, LPSTR_TEXTCALLBACK, I_IMAGECALLBACK);
 		m_WndListView.AddItem(n, 3, LPSTR_TEXTCALLBACK, I_IMAGECALLBACK);
 		m_WndListView.AddItem(n, 4, LPSTR_TEXTCALLBACK, I_IMAGECALLBACK);
-		
+
 		ctr++;
 		lpifqThisItem = nullptr;
 		lpi = nullptr; // free PIDL the shell gave you
@@ -269,7 +269,7 @@ BOOL CExplorerView::FillListView(LPTVITEMDATA lptvid, LPSHELLFOLDER pShellFolder
 	return TRUE;
 }
 
-LRESULT CExplorerView::OnLVGetDispInfo(int, LPNMHDR pnmh, BOOL&){
+LRESULT CExplorerView::OnLVGetDispInfo(int, LPNMHDR pnmh, BOOL&) {
 	NMLVDISPINFO* plvdi = (NMLVDISPINFO*)pnmh;
 	if (plvdi == nullptr)
 		return 0;
@@ -290,7 +290,7 @@ LRESULT CExplorerView::OnLVGetDispInfo(int, LPNMHDR pnmh, BOOL&){
 		return 0L;
 
 	CShellItemIDList pidlTemp = m_ShellMgr.ConcatPidls(lptvid->lpifq, lplvid->lpi);
-	plvdi->item.iImage = m_ShellMgr.GetIconIndex(pidlTemp, 
+	plvdi->item.iImage = m_ShellMgr.GetIconIndex(pidlTemp,
 		SHGFI_PIDL | SHGFI_SYSICONINDEX | SHGFI_SMALLICON);
 	if (plvdi->item.iSubItem == 0 && (plvdi->item.mask & LVIF_TEXT)) {
 		// File Name
@@ -322,7 +322,7 @@ LRESULT CExplorerView::OnLVGetDispInfo(int, LPNMHDR pnmh, BOOL&){
 	return 0;
 }
 
-LRESULT CExplorerView::OnTVItemExpanding(int, LPNMHDR pnmh, BOOL&){
+LRESULT CExplorerView::OnTVItemExpanding(int, LPNMHDR pnmh, BOOL&) {
 	CWaitCursor wait;
 	LPNMTREEVIEW pnmtv = (LPNMTREEVIEW)pnmh;
 	if ((pnmtv->itemNew.state & TVIS_EXPANDEDONCE))
@@ -339,11 +339,11 @@ LRESULT CExplorerView::OnTVItemExpanding(int, LPNMHDR pnmh, BOOL&){
 
 	FillTreeView(spFolder, lptvid->lpifq, pnmtv->itemNew.hItem);
 
-	
+
 	return 0;
 }
 
-LRESULT CExplorerView::OnTVDeleteItem(int, LPNMHDR pnmh, BOOL&){
+LRESULT CExplorerView::OnTVDeleteItem(int, LPNMHDR pnmh, BOOL&) {
 	LPNMTREEVIEW pnmtv = (LPNMTREEVIEW)pnmh;
 	LPTVITEMDATA lptvid = (LPTVITEMDATA)pnmtv->itemOld.lParam;
 	delete lptvid;
@@ -369,7 +369,7 @@ LRESULT CExplorerView::OnLVDeleteItem(int, LPNMHDR pnmh, BOOL&)
 	return 0;
 }
 
-LRESULT CExplorerView::OnNMRClick(int, LPNMHDR pnmh, BOOL&){
+LRESULT CExplorerView::OnNMRClick(int, LPNMHDR pnmh, BOOL&) {
 	POINT pt = { 0,0 };
 	::GetCursorPos(&pt);
 	POINT ptClient = pt;
@@ -423,7 +423,7 @@ LRESULT CExplorerView::OnNMRClick(int, LPNMHDR pnmh, BOOL&){
 	return 0;
 }
 
-void CExplorerView::RefreshTreeView(){
+void CExplorerView::RefreshTreeView() {
 	CComPtr<IShellFolder> spFolder;
 	HRESULT hr = ::SHGetDesktopFolder(&spFolder);
 	if (SUCCEEDED(hr)) {
@@ -435,7 +435,7 @@ void CExplorerView::RefreshTreeView(){
 	}
 }
 
-LRESULT CExplorerView::OnForceDeleteFile(WORD, WORD, HWND, BOOL&){
+LRESULT CExplorerView::OnForceDeleteFile(WORD, WORD, HWND, BOOL&) {
 	DWORD attr = GetFileAttributes(m_Path);
 	if (attr == INVALID_FILE_ATTRIBUTES) {
 		AtlMessageBox(nullptr, L"Invalid file!!!", L"Error", MB_ICONERROR);
@@ -443,7 +443,7 @@ LRESULT CExplorerView::OnForceDeleteFile(WORD, WORD, HWND, BOOL&){
 	}
 	CString msg;
 	msg.Format(L"Are you sure to delete the file: %s ?", m_Path);
-	int ret = AtlMessageBox(nullptr,msg.GetString(), L"Confirm Infomration", MB_OKCANCEL);
+	int ret = AtlMessageBox(nullptr, msg.GetString(), L"Confirm Infomration", MB_OKCANCEL);
 	if (ret == IDCANCEL) {
 		return 0;
 	}

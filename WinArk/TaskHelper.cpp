@@ -2,7 +2,7 @@
 #include "TaskHelper.h"
 #include "ComHelper.h"
 
-HRESULT TaskSchedSvc::Init(PCWSTR machineName, PCWSTR userName, 
+HRESULT TaskSchedSvc::Init(PCWSTR machineName, PCWSTR userName,
 	PCWSTR domain, PCWSTR password) {
 	auto hr = _svc.CoCreateInstance(__uuidof(TaskScheduler));
 	if (FAILED(hr))
@@ -49,7 +49,7 @@ CString TaskHelper::GetProcessName(DWORD pid) {
 	if (!hProcess)
 		return L"";
 
-	WCHAR path[MAX_PATH *2];
+	WCHAR path[MAX_PATH * 2];
 	DWORD len = _countof(path);
 	auto count = ::QueryFullProcessImageName(hProcess, 0, path, &len);
 	::CloseHandle(hProcess);

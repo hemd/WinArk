@@ -3,7 +3,7 @@
 #include "ThemeHelper.h"
 
 template <bool t_bVertical>
-class CCustomSplitterWindowT 
+class CCustomSplitterWindowT
 	: public CSplitterWindowImpl<CCustomSplitterWindowT<t_bVertical>> {
 public:
 
@@ -49,11 +49,11 @@ public:
 				else
 					rect2.top = (rect.top + rect.bottom) / 2 - 1;
 
-				dc.GradientFillRect(rect2, ::GetSysColor(COLOR_3DFACE), 
+				dc.GradientFillRect(rect2, ::GetSysColor(COLOR_3DFACE),
 					::GetSysColor(COLOR_3DSHADOW), t_bVertical);
 			}
 
-			dc.DrawEdge(&rect, EDGE_ETCHED, t_bVertical 
+			dc.DrawEdge(&rect, EDGE_ETCHED, t_bVertical
 				? (BF_LEFT | BF_RIGHT) : (BF_TOP | BF_BOTTOM));
 		}
 	}

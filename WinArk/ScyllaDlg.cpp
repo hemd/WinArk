@@ -49,7 +49,7 @@ LRESULT CScyllaDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 	SetupStatusBar();
 
 	DoDataExchange(); // attach controls
-	
+
 	EnableDialogControls(FALSE);
 
 	ProcessHandler();
@@ -159,14 +159,14 @@ void CScyllaDlg::OnContextMenu(CWindow wnd, CPoint point)
 {
 	switch (wnd.GetDlgCtrlID())
 	{
-		case IDC_LIST_LOG:
-			DisplayContextMenuLog(wnd, point);
-			return;
-		case IDC_TREE_IMPORTS:
-			DisplayContextMenuImports(wnd, point);
-			return;
-		default:
-			break;
+	case IDC_LIST_LOG:
+		DisplayContextMenuLog(wnd, point);
+		return;
+	case IDC_TREE_IMPORTS:
+		DisplayContextMenuImports(wnd, point);
+		return;
+	default:
+		break;
 	}
 	SetMsgHandled(false);
 }
@@ -405,7 +405,7 @@ bool CScyllaDlg::ShowFileDialog(WCHAR* pSelectedFile, bool save, const WCHAR* pD
 	else
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 
-	if(save)
+	if (save)
 		return 0 != GetSaveFileName(&ofn);
 	else
 		return 0 != GetOpenFileName(&ofn);
@@ -470,7 +470,7 @@ void CScyllaDlg::PERebuildHandler() {
 	GetCurrentModulePath(_text, _countof(_text));
 	if (ShowFileDialog(selectedFilePath, false, nullptr, s_FilterExeDll, nullptr, _text)) {
 		DWORD fileSize = ProcessAccessHelper::GetFileSize(selectedFilePath);
-		
+
 		PEParser parser(selectedFilePath, true);
 
 		if (!parser.IsValid()) {
@@ -517,18 +517,18 @@ LRESULT CScyllaDlg::OnTreeImportsKeyDown(const NMHDR* pnmh) {
 	const NMTVKEYDOWN* tkd = (NMTVKEYDOWN*)pnmh;
 	switch (tkd->wVKey)
 	{
-		case VK_RETURN:
+	case VK_RETURN:
+	{
+		CTreeItem selected = _treeImports.GetFocusItem();
+		if (!selected.IsNull() && _importsHandling.IsImport(selected))
 		{
-			CTreeItem selected = _treeImports.GetFocusItem();
-			if (!selected.IsNull() && _importsHandling.IsImport(selected))
-			{
-				// to do: Pick API handler
-			}
+			// to do: Pick API handler
 		}
+	}
+	return 1;
+	case VK_DELETE:
+		DeleteSelectedImportsHandler();
 		return 1;
-		case VK_DELETE:
-			DeleteSelectedImportsHandler();
-			return 1;
 	}
 
 	SetMsgHandled(FALSE);
@@ -611,26 +611,26 @@ void CScyllaDlg::DisplayContextMenuImports(CWindow hwnd, CPoint pt) {
 	if (menuItem) {
 		switch (menuItem)
 		{
-			case ID_INVALIDATE:
-				if (_importsHandling.IsModule(over))
-					_importsHandling.InvalidateModule(over);
-				else
-					_importsHandling.InvalidateImport(over);
-				break;
-			case ID_IMPORTS_DISASSEMBLE:
-				StartDisassembler(over);
-				break;
-			case ID_EXPAND_ALL_NODES:
-				_importsHandling.ExpandAllTreeNodes();
-				break;
-			case ID_CUT_THUNK:
-				_importsHandling.CutImport(over);
-				break;
-			case ID_DELETE_TREE_NODE:
-				_importsHandling.CutModule(_importsHandling.IsImport(over) ? over.GetParent() : over);
-				break;
-			default:
-				break;
+		case ID_INVALIDATE:
+			if (_importsHandling.IsModule(over))
+				_importsHandling.InvalidateModule(over);
+			else
+				_importsHandling.InvalidateImport(over);
+			break;
+		case ID_IMPORTS_DISASSEMBLE:
+			StartDisassembler(over);
+			break;
+		case ID_EXPAND_ALL_NODES:
+			_importsHandling.ExpandAllTreeNodes();
+			break;
+		case ID_CUT_THUNK:
+			_importsHandling.CutImport(over);
+			break;
+		case ID_DELETE_TREE_NODE:
+			_importsHandling.CutModule(_importsHandling.IsImport(over) ? over.GetParent() : over);
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -738,7 +738,7 @@ void CScyllaDlg::LoadTreeHandler() {
 
 		}
 		else {
-			swprintf_s(_text, L"Are you sure? Replace the OEP, IAT, and IAT size with %p %p %x", 
+			swprintf_s(_text, L"Are you sure? Replace the OEP, IAT, and IAT size with %p %p %x",
 				oep, iat, iatSize);
 
 			int result = MessageBox(_text, L"Confirmation", MB_YESNO | MB_ICONQUESTION);
