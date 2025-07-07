@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "resource.h"
 #include "Table.h"
@@ -12,35 +12,31 @@
 #include <Helpers.h>
 #include "SymbolHelper.h"
 #include "SecurityHelper.h"
+#include <atomic>
+#include <wil/resource.h>
+#include <future>
 
 CAppModule _Module;
-HWND _hMainWnd;
+HWND _hMainWnd = nullptr;
 AppSettings _Settings;
 
-bool g_hasSymbol = true;
-HANDLE g_hSingleInstMutex{ nullptr };
-
-void InitSymbols(std::wstring fileName) {
-	WCHAR path[MAX_PATH];
+bool InitSymbols(std::wstring fileName) {
+	WCHAR path[MAX_PATH] = {};
 	::GetSystemDirectory(path, MAX_PATH);
 	wcscat_s(path, L"\\");
 	wcscat_s(path, fileName.c_str());
 	PEParser parser(path);
 	auto dir = parser.GetDataDirectory(IMAGE_DIRECTORY_ENTRY_DEBUG);
-	if (dir != nullptr) {
-		SymbolFileInfo info;
-		auto entry = static_cast<PIMAGE_DEBUG_DIRECTORY>(parser.GetAddress(dir->VirtualAddress));
-		ULONG_PTR VA = reinterpret_cast<ULONG_PTR>(parser.GetBaseAddress());
-		info.GetPdbSignature(VA, entry);
-		::GetCurrentDirectory(MAX_PATH, path);
-		wcscat_s(path, L"\\Symbols");
-		bool success = info.SymDownloadSymbol(path);
-		if (!success)
-			g_hasSymbol = false;
+	if (!dir) {
+		return false;
 	}
-	else {
-		g_hasSymbol = false;
-	}
+	SymbolFileInfo info;
+	auto entry = static_cast<PIMAGE_DEBUG_DIRECTORY>(parser.GetAddress(dir->VirtualAddress));
+	ULONG_PTR VA = reinterpret_cast<ULONG_PTR>(parser.GetBaseAddress());
+	info.GetPdbSignature(VA, entry);
+	::GetCurrentDirectory(MAX_PATH, path);
+	wcscat_s(path, L"\\Symbols");
+	return info.SymDownloadSymbol(path);
 }
 
 void ClearSymbols() {
@@ -100,38 +96,17 @@ int Run(LPTSTR lpstrCmdLine = nullptr, int nCmdShow = SW_SHOWDEFAULT) {
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 
-	HANDLE hThread = ::CreateThread(nullptr, 0, [](auto param)->DWORD {
+	std::future<bool> symbolInitFuture = std::async(std::launch::async, []() -> bool {
 		std::string name = Helpers::GetNtosFileName();
 		std::wstring osFileName = Helpers::StringToWstring(name);
-		InitSymbols(osFileName.c_str());
-		if (!g_hasSymbol)
-			return -1;
-		InitSymbols(L"user32.dll");
-		if (!g_hasSymbol)
-			return -1;
-		InitSymbols(L"ntdll.dll");
-		if (!g_hasSymbol)
-			return -1;
-		InitSymbols(L"win32k.sys");
-		if (!g_hasSymbol)
-			return -1;
-		InitSymbols(L"ci.dll");
-		if (!g_hasSymbol)
-			return -1;
-		InitSymbols(L"drivers\\fltmgr.sys");
-		if (!g_hasSymbol)
-			return -1;
+		return InitSymbols(osFileName.c_str()) && InitSymbols(L"user32.dll") && InitSymbols(L"ntdll.dll")
+			&& InitSymbols(L"win32k.sys") && InitSymbols(L"ci.dll") && InitSymbols(L"drivers\\fltmgr.sys");
+		});
 
-
-		return 0;
-		}, nullptr, 0, nullptr);
-
-	::WaitForSingleObject(hThread, INFINITE);
-	if (!g_hasSymbol || NULL == hThread) {
+	if (!symbolInitFuture.get()) {
+		// Symbol initialization failed
 		return 0;
 	}
-	::CloseHandle(hThread);
-
 
 	SymbolHelper::Init();
 
@@ -142,7 +117,7 @@ int Run(LPTSTR lpstrCmdLine = nullptr, int nCmdShow = SW_SHOWDEFAULT) {
 	InitSchemSys();
 
 	CMainFrame wndMain;
-	_hMainWnd = wndMain.CreateEx(NULL); // CreateEx�Ż���� IDR_MAINFRAME��ص���Դ
+	_hMainWnd = wndMain.CreateEx(NULL);
 	if (_hMainWnd == NULL) {
 		ATLTRACE(_T("Main dialog creation failed!\n"));
 		return 0;
@@ -203,16 +178,12 @@ LONG WINAPI SelfUnhandledExceptionFilter(EXCEPTION_POINTERS* ExceptionInfo)
 }
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow) {
-	g_hSingleInstMutex = ::CreateMutex(nullptr, FALSE, L"WinArkSingleInstanceMutex");
-	if (!g_hSingleInstMutex) {
-		return 1;
+	wil::unique_handle hSingleInstMutex{ ::CreateMutex(nullptr, FALSE, L"WinArkSingleInstanceMutex") };
+	if (hSingleInstMutex && ::GetLastError() == ERROR_ALREADY_EXISTS) {
+		MessageBox(nullptr, L"Please do not double start!!!", L"Error", MB_ICONERROR);
+		return -1;
 	}
-	if (!::wcsstr(lpstrCmdLine, L"runas")) {
-		if (::GetLastError() == ERROR_ALREADY_EXISTS) {
-			MessageBox(nullptr, L"Please do not double start!!!", L"Error", MB_ICONERROR);
-			return -1;
-		}
-	}
+
 	HRESULT hRes = ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 	ATLASSERT(SUCCEEDED(hRes));
 	// add flags to support other controls
@@ -222,18 +193,20 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(SUCCEEDED(hRes));
 	::SetPriorityClass(::GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 	::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+
 	::SetUnhandledExceptionFilter(SelfUnhandledExceptionFilter);
 
-	SecurityHelper::EnablePrivilege(SE_SYSTEM_ENVIRONMENT_NAME, true);
+	SecurityHelper::EnablePrivilege(SE_SYSTEM_ENVIRONMENT_NAME, true); // 可以调用 SetFirmwareEnvironmentVariable 和 GetFirmwareEnvironmentVariable 等 API
 	SecurityHelper::EnablePrivilege(SE_DEBUG_NAME, true);
 
 	if (!CheckInstall(lpstrCmdLine))
 		return 0;
 
 	::SymSetOptions(SYMOPT_UNDNAME // 取消符号修饰
-		| SYMOPT_CASE_INSENSITIVE |
-		SYMOPT_AUTO_PUBLICS | SYMOPT_INCLUDE_32BIT_MODULES |
-		SYMOPT_OMAP_FIND_NEAREST);
+		| SYMOPT_CASE_INSENSITIVE
+		| SYMOPT_AUTO_PUBLICS
+		| SYMOPT_INCLUDE_32BIT_MODULES
+		| SYMOPT_OMAP_FIND_NEAREST);
 	::SymInitialize(::GetCurrentProcess(), nullptr, TRUE);
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
@@ -243,9 +216,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	::SymCleanup(::GetCurrentProcess());
 	_Module.Term();
 	::CoUninitialize();
-	::CloseHandle(g_hSingleInstMutex);
-
 
 	return nRet;
 }
-
