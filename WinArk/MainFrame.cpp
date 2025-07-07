@@ -227,7 +227,6 @@ void CMainFrame::InitServiceTable() {
 void CMainFrame::InitDriverInterface() {
 	// 定位驱动二进制文件，提取到系统目录，然后安装
 	auto hRes = ::FindResource(nullptr, MAKEINTRESOURCE(IDR_DRIVER), L"BIN");
-
 	if (!hRes)
 		return;
 

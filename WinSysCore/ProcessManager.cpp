@@ -34,10 +34,6 @@ struct ProcessManager::Impl {
 	static bool _isElevated;
 
 	Impl() {
-		if (_totalProcessors == 0) {
-			_totalProcessors = ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
-			_isElevated = Process::OpenById(::GetCurrentProcessId())->IsElevated();
-		}
 	}
 
 	size_t EnumProcesses(bool includeThreads, uint32_t pid);
@@ -93,8 +89,8 @@ struct ProcessManager::Impl {
 	}
 };
 
-uint32_t ProcessManager::Impl::_totalProcessors;
-bool ProcessManager::Impl::_isElevated;
+uint32_t ProcessManager::Impl::_totalProcessors = ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
+bool ProcessManager::Impl::_isElevated = Process::OpenById(::GetCurrentProcessId())->IsElevated();
 
 ProcessManager::ProcessManager() :_impl(std::make_unique<Impl>()){ }
 ProcessManager::~ProcessManager() = default;

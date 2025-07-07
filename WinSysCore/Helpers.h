@@ -1,7 +1,7 @@
 #pragma once
 
-
-struct Helpers abstract final {
+class Helpers final {
+public:
 	static std::wstring GetDosNameFromNtName(PCWSTR name);
 	static PVOID GetKernelBase();
 	static DWORD GetKernelImageSize();
@@ -22,6 +22,4 @@ struct Helpers abstract final {
 
 	static bool SearchPattern(PUCHAR pattern, UCHAR wildcard,
 		ULONG_PTR len, const void* base, ULONG_PTR size, PVOID* ppFound);
-
-
 };

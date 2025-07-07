@@ -14,7 +14,7 @@ public:
 	DECLARE_WND_CLASS(nullptr);
 
 	const UINT TabId = 1235;
-	CKernelHookView() :m_TabCtrl(this) {
+	CKernelHookView() {
 	}
 
 	BEGIN_MSG_MAP(CKernelHookView)
@@ -39,7 +39,7 @@ public:
 	};
 private:
 	// 动态创建出来的控件
-	CContainedWindowT<CTabCtrl> m_TabCtrl;
+	CTabCtrl m_TabCtrl;
 
 	CSSDTHookTable* m_SSDTHookTable{ nullptr };
 	CShadowSSDTHookTable* m_ShadowSSDTHookTable{ nullptr };

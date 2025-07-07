@@ -39,14 +39,12 @@ public:
 	~Cleanup() { fn(); }
 };
 
-struct SymbolFileInfo {
-	SymbolFileInfo();
-	~SymbolFileInfo();
+class SymbolFileInfo {
+public:
 	bool SymDownloadSymbol(std::wstring localFile);
 	bool GetPdbSignature(ULONG_PTR imageBase,PIMAGE_DEBUG_DIRECTORY entry);
 	downslib_error Download(std::string url, std::wstring fileName, 
 		std::string userAgent, unsigned int timeout,downslib_cb = nullptr, void* userdata = nullptr);
-
 	CString _pdbSignature;
 	CString _pdbFile;
 	PdbValidationData _pdbValidation;

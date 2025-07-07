@@ -1,6 +1,3 @@
-// WinArk.cpp : main source file for WinArk.exe
-//
-
 #include "stdafx.h"
 
 #include "resource.h"
@@ -59,7 +56,7 @@ static const GUID iconGuid =
 
 bool ShowBalloonTip(PCWSTR title, PCWSTR text, ULONG timeout) {
 	NOTIFYICONDATA notifyIcon = { sizeof(NOTIFYICONDATA) };
-	
+
 
 	notifyIcon.uFlags = NIF_INFO | NIF_GUID;
 	notifyIcon.hWnd = _hMainWnd;
@@ -99,24 +96,6 @@ bool RemoveNotifyIcon() {
 	return Shell_NotifyIcon(NIM_DELETE, &notifyIcon);
 }
 
-bool EnableDebugPrivilege() {
-	HANDLE hToken;
-	if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken))
-		return false;
-
-	TOKEN_PRIVILEGES tp;
-	tp.PrivilegeCount = 1;
-	tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-	if (!::LookupPrivilegeValue(nullptr, SE_DEBUG_NAME, &tp.Privileges[0].Luid))
-		return false;
-
-	auto success = ::AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(tp), nullptr, nullptr);
-	auto error = ::GetLastError();
-	::CloseHandle(hToken);
-
-	return success && error == ERROR_SUCCESS;
-}
-
 int Run(LPTSTR lpstrCmdLine = nullptr, int nCmdShow = SW_SHOWDEFAULT) {
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
@@ -148,7 +127,7 @@ int Run(LPTSTR lpstrCmdLine = nullptr, int nCmdShow = SW_SHOWDEFAULT) {
 		}, nullptr, 0, nullptr);
 
 	::WaitForSingleObject(hThread, INFINITE);
-	if (!g_hasSymbol||NULL == hThread) {
+	if (!g_hasSymbol || NULL == hThread) {
 		return 0;
 	}
 	::CloseHandle(hThread);
@@ -163,13 +142,7 @@ int Run(LPTSTR lpstrCmdLine = nullptr, int nCmdShow = SW_SHOWDEFAULT) {
 	InitSchemSys();
 
 	CMainFrame wndMain;
-
-	/*CString cmdLine(lpstrCmdLine);
-	cmdLine.Trim(L" \"");
-	if(!cmdLine.IsEmpty()&&cmdLine.Right(11).CompareNoCase(L"regedit.exe")!=0)*/
-		
-	// CreateEx≤≈ª·º”‘ÿ IDR_MAINFRAMEœ‡πÿµƒ◊ ‘¥
-	_hMainWnd = wndMain.CreateEx(NULL);
+	_hMainWnd = wndMain.CreateEx(NULL); // CreateExÔøΩ≈ªÔøΩÔøΩÔøΩÔøΩ IDR_MAINFRAMEÔøΩÔøΩÿµÔøΩÔøΩÔøΩ‘¥
 	if (_hMainWnd == NULL) {
 		ATLTRACE(_T("Main dialog creation failed!\n"));
 		return 0;
@@ -188,10 +161,9 @@ int Run(LPTSTR lpstrCmdLine = nullptr, int nCmdShow = SW_SHOWDEFAULT) {
 }
 
 bool CheckInstall(PCWSTR cmdLine) {
-	bool parse = false, success = false;
+	bool success = true;
 
 	auto hRes = ::FindResource(nullptr, MAKEINTRESOURCE(IDR_DRIVER), L"BIN");
-
 	if (!hRes)
 		return false;
 
@@ -203,22 +175,20 @@ bool CheckInstall(PCWSTR cmdLine) {
 	void* pBuffer = ::LockResource(hGlobal);
 
 	if (::wcsstr(cmdLine, L"install")) {
-		parse = true;
 		success = DriverHelper::LoadDriver();
 		if (!success)
-			if (DriverHelper::InstallDriver(false,pBuffer,size))
+			if (DriverHelper::InstallDriver(false, pBuffer, size))
 				success = DriverHelper::LoadDriver();
 		if (!success)
 			AtlMessageBox(nullptr, L"Failed to install/load kernel driver", IDS_TITLE, MB_ICONERROR);
 	}
 	else if (::wcsstr(cmdLine, L"update")) {
-		parse = true;
-		success = DriverHelper::UpdateDriver(pBuffer,size);
+		success = DriverHelper::UpdateDriver(pBuffer, size);
 		if (!success) {
 			AtlMessageBox(nullptr, L"Failed to update kernel driver", IDS_TITLE, MB_ICONERROR);
 		}
 	}
-	return parse;
+	return success;
 }
 
 LONG WINAPI SelfUnhandledExceptionFilter(EXCEPTION_POINTERS* ExceptionInfo)
@@ -238,18 +208,16 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		return 1;
 	}
 	if (!::wcsstr(lpstrCmdLine, L"runas")) {
-		if (g_hSingleInstMutex) {
-			if (::GetLastError() == ERROR_ALREADY_EXISTS) {
-				MessageBox(nullptr, L"Please do not double start!!!", L"Error", MB_ICONERROR);
-				return -1;
-			}
+		if (::GetLastError() == ERROR_ALREADY_EXISTS) {
+			MessageBox(nullptr, L"Please do not double start!!!", L"Error", MB_ICONERROR);
+			return -1;
 		}
 	}
-	HRESULT hRes = ::CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED|COINIT_DISABLE_OLE1DDE);
+	HRESULT hRes = ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 	ATLASSERT(SUCCEEDED(hRes));
 	// add flags to support other controls
 	AtlInitCommonControls(ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TREEVIEW_CLASSES);
-	
+
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
 	::SetPriorityClass(::GetCurrentProcess(), HIGH_PRIORITY_CLASS);
@@ -257,26 +225,26 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	::SetUnhandledExceptionFilter(SelfUnhandledExceptionFilter);
 
 	SecurityHelper::EnablePrivilege(SE_SYSTEM_ENVIRONMENT_NAME, true);
+	SecurityHelper::EnablePrivilege(SE_DEBUG_NAME, true);
 
-	EnableDebugPrivilege();
-
-	if (CheckInstall(lpstrCmdLine))
+	if (!CheckInstall(lpstrCmdLine))
 		return 0;
 
-	::SymSetOptions(SYMOPT_UNDNAME | SYMOPT_CASE_INSENSITIVE |
+	::SymSetOptions(SYMOPT_UNDNAME // ÂèñÊ∂àÁ¨¶Âè∑‰øÆÈ•∞
+		| SYMOPT_CASE_INSENSITIVE |
 		SYMOPT_AUTO_PUBLICS | SYMOPT_INCLUDE_32BIT_MODULES |
 		SYMOPT_OMAP_FIND_NEAREST);
 	::SymInitialize(::GetCurrentProcess(), nullptr, TRUE);
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
-	
+
 	DriverHelper::LoadDriver(false);
 
+	::SymCleanup(::GetCurrentProcess());
 	_Module.Term();
 	::CoUninitialize();
 	::CloseHandle(g_hSingleInstMutex);
 
-	::SymCleanup(::GetCurrentProcess());
 
 	return nRet;
 }

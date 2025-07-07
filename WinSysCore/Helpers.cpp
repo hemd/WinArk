@@ -72,7 +72,9 @@ DWORD Helpers::GetKernelImageSize() {
 std::string Helpers::GetNtosFileName() {
 	ULONG size = 1 << 18;
 	wil::unique_virtualalloc_ptr<> buffer(::VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
-
+	if(!buffer) {
+		return "";
+	}
 	NTSTATUS status;
 	status = ::NtQuerySystemInformation(static_cast<SYSTEM_INFORMATION_CLASS>(SystemModuleInformation),
 		buffer.get(), size, nullptr);
@@ -165,7 +167,7 @@ PVOID Helpers::GetKernelModuleBase(std::string moduleName) {
 			break;
 		std::string name;
 		name = std::string((PCSTR)((BYTE*)entry->FullPathName + entry->OffsetToFileName));
-		if (!_stricmp(name.c_str(),moduleName.c_str())) {
+		if (!_stricmp(name.c_str(), moduleName.c_str())) {
 			return entry->ImageBase;
 		}
 		entry += 1;
@@ -240,7 +242,7 @@ std::string Helpers::GetKernelModuleNameByAddress(ULONG_PTR address) {
 
 std::wstring Helpers::GetUserModuleByAddress(ULONG_PTR address, ULONG pid) {
 	std::wstring moduleName = L"";
-	if (pid == 0||pid==4) {
+	if (pid == 0 || pid == 4) {
 		return StringToWstring(GetKernelModuleByAddress(address));
 	}
 	WinSys::ProcessModuleTracker m_Tracker(pid);
@@ -260,13 +262,12 @@ std::wstring Helpers::GetUserModuleByAddress(ULONG_PTR address, ULONG pid) {
 }
 
 std::wstring Helpers::StringToWstring(const std::string& str) {
-	int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, nullptr, 0);
-	len += 1;
-	std::unique_ptr<wchar_t[]> buffer = std::make_unique<wchar_t[]>(len);
-	memset(buffer.get(), 0, sizeof(wchar_t) * len);
-	MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), buffer.get(), len);
-	std::wstring wstr(buffer.get());
-	return wstr;
+	// 计算实际字符数（不包括结尾\0）
+	int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), static_cast<int>(str.size()), nullptr, 0);
+	if (len == 0) return L"";
+	std::wstring buffer(len, L'\0');
+	MultiByteToWideChar(CP_ACP, 0, str.c_str(), static_cast<int>(str.size()), &buffer[0], len);
+	return buffer;
 }
 
 std::string Helpers::WstringToString(const std::wstring& wstr) {
@@ -332,7 +333,7 @@ std::wstring Helpers::GetDriverDirFromObjectManager(std::wstring serviceName) {
 bool Helpers::WriteString(HANDLE hFile, std::wstring const& text) {
 	DWORD bytes;
 	std::string txt = WstringToString(text);
-	return ::WriteFile(hFile, txt.data(), txt.length(),&bytes,nullptr);
+	return ::WriteFile(hFile, txt.data(), txt.length(), &bytes, nullptr);
 }
 
 

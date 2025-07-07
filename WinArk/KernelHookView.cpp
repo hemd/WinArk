@@ -4,13 +4,10 @@
 
 LRESULT CKernelHookView::OnCreate(UINT, WPARAM, LPARAM, BOOL&) {
 	CRect r(0, 0, 400, 25);
-	CTabCtrl tabCtrl;
-	auto hTabCtrl = tabCtrl.Create(m_hWnd, &r, nullptr, WS_CHILDWINDOW | WS_VISIBLE | WS_CLIPSIBLINGS
+	m_TabCtrl.Create(m_hWnd, &r, nullptr, WS_CHILDWINDOW | WS_VISIBLE | WS_CLIPSIBLINGS
 		| TCS_HOTTRACK | TCS_SINGLELINE | TCS_RIGHTJUSTIFY | TCS_TABS,
 		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_NOPARENTNOTIFY,TabId);
-	m_TabCtrl.SubclassWindow(hTabCtrl);
 	
-	//m_TabCtrl.SetFont()
 	HFONT hFont = g_hAppFont;
 	m_TabCtrl.SetFont(hFont, true);
 

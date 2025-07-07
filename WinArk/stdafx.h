@@ -20,7 +20,7 @@
 
 #include <atlbase.h>
 #include <atlstr.h>
-#include <atlapp.h>
+#include <atlapp.h> // WTL
 
 #include <atlwin.h>
 
@@ -29,6 +29,7 @@
 extern CAppModule _Module;
 
 #include <wil\resource.h>
+// WTL
 #include <atlframe.h>
 // 这里有字符串定义，所以atlstr.h在前面
 #include <atlctrls.h>

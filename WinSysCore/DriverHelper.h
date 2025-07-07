@@ -2,7 +2,8 @@
 #include "..\Anti-Rootkit\AntiRootkit.h"
 
 
-struct DriverHelper final {
+class DriverHelper final {
+public:
 	static bool LoadDriver(bool load = true);
 	static bool InstallDriver(bool justCopy = false, void* pBuffer = nullptr,DWORD size = 0);
 	static bool UpdateDriver(void* pBuffer,DWORD size);

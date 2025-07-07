@@ -43,10 +43,10 @@ bool DriverHelper::LoadDriver(bool load) {
 	return false;
 }
 
-bool DriverHelper::InstallDriver(bool justCopy,void* pBuffer,DWORD size) {
+bool DriverHelper::InstallDriver(bool justCopy, void* pBuffer, DWORD size) {
 	if (!SecurityHelper::IsRunningElevated())
 		return false;
-	
+
 	WCHAR path[MAX_PATH];
 	::GetSystemDirectory(path, MAX_PATH);
 	::wcscat_s(path, L"\\Drivers\\AntiRootkit.sys");
@@ -84,7 +84,7 @@ bool DriverHelper::InstallDriver(bool justCopy,void* pBuffer,DWORD size) {
 	if (!hScm)
 		return false;
 
-	wil::unique_schandle hService(::CreateService(hScm.get(), L"AntiRootkit", nullptr, SERVICE_ALL_ACCESS, 
+	wil::unique_schandle hService(::CreateService(hScm.get(), L"AntiRootkit", nullptr, SERVICE_ALL_ACCESS,
 		SERVICE_KERNEL_DRIVER,
 		SERVICE_DEMAND_START, // starting services on demand
 		SERVICE_ERROR_NORMAL, // the error is logged to the event log service
@@ -102,10 +102,10 @@ bool DriverHelper::InstallDriver(bool justCopy,void* pBuffer,DWORD size) {
 	return success;
 }
 
-bool DriverHelper::UpdateDriver(void* pBuffer,DWORD size) {
+bool DriverHelper::UpdateDriver(void* pBuffer, DWORD size) {
 	if (!LoadDriver(false))
 		return false;
-	if (!InstallDriver(true,pBuffer,size))
+	if (!InstallDriver(true, pBuffer, size))
 		return false;
 	if (!LoadDriver())
 		return false;
@@ -123,7 +123,7 @@ HANDLE DriverHelper::OpenHandle(void* pObject, ACCESS_MASK access) {
 
 	DWORD bytes;
 	HANDLE hObject;
-	return ::DeviceIoControl(_hDevice, IOCTL_ARK_OPEN_OBJECT, &data, sizeof(data), 
+	return ::DeviceIoControl(_hDevice, IOCTL_ARK_OPEN_OBJECT, &data, sizeof(data),
 		&hObject, sizeof(hObject), &bytes, nullptr) ? hObject : nullptr;
 }
 
@@ -146,7 +146,7 @@ HANDLE DriverHelper::OpenProcess(DWORD pid, ACCESS_MASK access) {
 
 
 bool DriverHelper::OpenDevice() {
-	if (!_hDevice||_hDevice==INVALID_HANDLE_VALUE) {
+	if (!_hDevice || _hDevice == INVALID_HANDLE_VALUE) {
 		_hDevice = ::CreateFile(L"\\\\.\\AntiRootkit", GENERIC_WRITE | GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
 			OPEN_EXISTING, 0, nullptr);
@@ -159,19 +159,22 @@ bool DriverHelper::OpenDevice() {
 }
 
 bool DriverHelper::IsDriverLoaded() {
-	wil::unique_schandle hScm(::OpenSCManager(nullptr, nullptr, SC_MANAGER_ENUMERATE_SERVICE));
-	if (!hScm)
-		return false;
+	do
+	{
+		wil::unique_schandle hScm(::OpenSCManager(nullptr, nullptr, SC_MANAGER_ENUMERATE_SERVICE));
+		if (!hScm)
+			break;
+		wil::unique_schandle hService(::OpenService(hScm.get(), L"AntiRootkit", SERVICE_QUERY_STATUS));
+		if (!hService)
+			break;
 
-	wil::unique_schandle hService(::OpenService(hScm.get(), L"AntiRootkit", SERVICE_QUERY_STATUS));
-	if (!hService)
-		return false;
+		SERVICE_STATUS status;
+		if (!::QueryServiceStatus(hService.get(), &status))
+			break;
 
-	SERVICE_STATUS status;
-	if (!::QueryServiceStatus(hService.get(), &status))
-		return false;
-
-	return status.dwCurrentState == SERVICE_RUNNING;
+		return status.dwCurrentState == SERVICE_RUNNING;
+	} while (false);
+	return false;
 }
 
 bool DriverHelper::CloseDevice() {
@@ -233,7 +236,7 @@ HANDLE DriverHelper::OpenThread(DWORD tid, ACCESS_MASK access) {
 }
 
 
-HANDLE DriverHelper::OpenKey(PCWSTR name,ACCESS_MASK access) {
+HANDLE DriverHelper::OpenKey(PCWSTR name, ACCESS_MASK access) {
 	if (!OpenDevice())
 		return nullptr;
 
@@ -255,7 +258,7 @@ HANDLE DriverHelper::OpenKey(PCWSTR name,ACCESS_MASK access) {
 	return hObject;
 }
 
-bool DriverHelper::DumpSysModule(PCWSTR sysPath,void* imageBase,ULONG imageSize) {
+bool DriverHelper::DumpSysModule(PCWSTR sysPath, void* imageBase, ULONG imageSize) {
 	if (!OpenDevice())
 		return false;
 
@@ -272,7 +275,7 @@ bool DriverHelper::DumpSysModule(PCWSTR sysPath,void* imageBase,ULONG imageSize)
 	::wcscpy_s(data->Name, len + 1, sysPath);
 
 	DWORD bytes;
-	return ::DeviceIoControl(_hDevice, IOCTL_ARK_DUMP_SYS_MODULE, data, size, 
+	return ::DeviceIoControl(_hDevice, IOCTL_ARK_DUMP_SYS_MODULE, data, size,
 		nullptr, 0, &bytes, nullptr);
 }
 
@@ -282,7 +285,7 @@ PULONG DriverHelper::GetShadowServiceTable(PULONG* pServiceDescriptor) {
 		return 0;
 
 	DWORD bytes;
-	::DeviceIoControl(_hDevice, IOCTL_ARK_GET_SHADOW_SERVICE_TABLE, pServiceDescriptor, sizeof(pServiceDescriptor), 
+	::DeviceIoControl(_hDevice, IOCTL_ARK_GET_SHADOW_SERVICE_TABLE, pServiceDescriptor, sizeof(pServiceDescriptor),
 		&address, sizeof(address), &bytes, nullptr);
 	return address;
 }
@@ -329,7 +332,7 @@ bool DriverHelper::KillProcess(ULONG pid) {
 	return ok;
 }
 
-bool DriverHelper::InitNtServiceTable(PULONG * pTable) {
+bool DriverHelper::InitNtServiceTable(PULONG* pTable) {
 	if (!OpenDevice())
 		return false;
 
@@ -345,12 +348,12 @@ ULONG DriverHelper::GetServiceLimit(PULONG* pTable) {
 
 	ULONG limit = 0;
 	DWORD bytes;
-	::DeviceIoControl(_hDevice, IOCTL_ARK_GET_SERVICE_LIMIT, pTable, sizeof(pTable), 
-		&limit, sizeof(limit),&bytes, nullptr);
+	::DeviceIoControl(_hDevice, IOCTL_ARK_GET_SERVICE_LIMIT, pTable, sizeof(pTable),
+		&limit, sizeof(limit), &bytes, nullptr);
 	return limit;
 }
 
-ULONG DriverHelper::GetProcessNotifyCount(ProcessNotifyCountData *pData) {
+ULONG DriverHelper::GetProcessNotifyCount(ProcessNotifyCountData* pData) {
 	if (!OpenDevice())
 		return 0;
 
@@ -399,7 +402,7 @@ bool DriverHelper::EnumImageLoadNotify(NotifyInfo* pNotifyInfo, KernelCallbackIn
 		return false;
 
 	DWORD bytes;
-	DWORD size = pCallbackInfo->Count * sizeof(void*)+sizeof(ULONG);
+	DWORD size = pCallbackInfo->Count * sizeof(void*) + sizeof(ULONG);
 	::DeviceIoControl(_hDevice, IOCTL_ARK_ENUM_IMAGELOAD_NOTIFY, pNotifyInfo, sizeof(NotifyInfo),
 		pCallbackInfo, size, &bytes, nullptr);
 	return true;
@@ -427,7 +430,7 @@ ULONG DriverHelper::GetPiDDBCacheDataSize(ULONG_PTR addr) {
 	return size;
 }
 
-bool DriverHelper::EnumPiDDBCacheTable(ULONG_PTR addr,PVOID buffer,ULONG size) {
+bool DriverHelper::EnumPiDDBCacheTable(ULONG_PTR addr, PVOID buffer, ULONG size) {
 	if (!OpenDevice())
 		return false;
 
@@ -437,7 +440,7 @@ bool DriverHelper::EnumPiDDBCacheTable(ULONG_PTR addr,PVOID buffer,ULONG size) {
 	return true;
 }
 
-ULONG DriverHelper::GetUnloadedDriverCount(PULONG * pCount) {
+ULONG DriverHelper::GetUnloadedDriverCount(PULONG* pCount) {
 	if (!OpenDevice())
 		return false;
 
@@ -448,7 +451,7 @@ ULONG DriverHelper::GetUnloadedDriverCount(PULONG * pCount) {
 	return count;
 }
 
-bool DriverHelper::EnumUnloadedDrivers(UnloadedDriversInfo* pInfo,PVOID buffer,ULONG size) {
+bool DriverHelper::EnumUnloadedDrivers(UnloadedDriversInfo* pInfo, PVOID buffer, ULONG size) {
 	if (!OpenDevice())
 		return false;
 
@@ -469,12 +472,12 @@ ULONG DriverHelper::GetUnloadedDriverDataSize(UnloadedDriversInfo* pInfo) {
 	return size;
 }
 
-bool DriverHelper::EnumObCallbackNotify(ULONG offset,ObCallbackInfo* pCallbackInfo,ULONG size) {
+bool DriverHelper::EnumObCallbackNotify(ULONG offset, ObCallbackInfo* pCallbackInfo, ULONG size) {
 	if (!OpenDevice())
 		return false;
 
 	DWORD bytes;
-	::DeviceIoControl(_hDevice,IOCTL_ARK_ENUM_OBJECT_CALLBACK, &offset, sizeof(ULONG),
+	::DeviceIoControl(_hDevice, IOCTL_ARK_ENUM_OBJECT_CALLBACK, &offset, sizeof(ULONG),
 		pCallbackInfo, size, &bytes, nullptr);
 	return true;
 }
@@ -512,7 +515,7 @@ ULONG DriverHelper::GetIoTimerCount(PULONG* pCount) {
 	return count;
 }
 
-bool DriverHelper::EnumCmCallbackNotify(PVOID pHeadList, CmCallbackInfo* pCallbackInfo, ULONG size){
+bool DriverHelper::EnumCmCallbackNotify(PVOID pHeadList, CmCallbackInfo* pCallbackInfo, ULONG size) {
 	if (!OpenDevice())
 		return 0;
 
@@ -548,7 +551,7 @@ bool DriverHelper::RemoveImageLoadNotify() {
 		return false;
 
 	DWORD bytes;
-	return ::DeviceIoControl(_hDevice, IOCTL_ARK_CLOSE_INTERCEPT_DRIVER_LOAD, 
+	return ::DeviceIoControl(_hDevice, IOCTL_ARK_CLOSE_INTERCEPT_DRIVER_LOAD,
 		nullptr, 0, nullptr, 0, &bytes, nullptr);
 }
 
@@ -566,11 +569,11 @@ bool DriverHelper::EnableDbgSys(DbgSysCoreInfo* pInfo) {
 		return false;
 
 	DWORD bytes;
-	return ::DeviceIoControl(_hDevice, IOCTL_ARK_ENABLE_DBGSYS, pInfo,sizeof(DbgSysCoreInfo),
+	return ::DeviceIoControl(_hDevice, IOCTL_ARK_ENABLE_DBGSYS, pInfo, sizeof(DbgSysCoreInfo),
 		nullptr, 0, &bytes, nullptr);
 }
 
-bool DriverHelper::EnumKernelTimer(KernelTimerData* pData,DpcTimerInfo* pInfo,SIZE_T size) {
+bool DriverHelper::EnumKernelTimer(KernelTimerData* pData, DpcTimerInfo* pInfo, SIZE_T size) {
 	if (!OpenDevice())
 		return false;
 
@@ -608,11 +611,11 @@ bool DriverHelper::DisableDbgSys() {
 		return false;
 
 	DWORD bytes;
-	return ::DeviceIoControl(_hDevice, IOCTL_ARK_DISABLE_DBGSYS, nullptr,0,
+	return ::DeviceIoControl(_hDevice, IOCTL_ARK_DISABLE_DBGSYS, nullptr, 0,
 		nullptr, 0, &bytes, nullptr);
 }
 
-bool DriverHelper::EnumMiniFilterOperations(MiniFilterData* pData,SIZE_T dataSize, OperationInfo* pInfo, SIZE_T size) {
+bool DriverHelper::EnumMiniFilterOperations(MiniFilterData* pData, SIZE_T dataSize, OperationInfo* pInfo, SIZE_T size) {
 	if (!OpenDevice())
 		return false;
 

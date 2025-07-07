@@ -136,9 +136,3 @@ downslib_error SymbolFileInfo::Download(std::string url, std::wstring fileName, 
     fileStream.close();
     return downslib_error::ok;
 }
-
-SymbolFileInfo::SymbolFileInfo() {
-}
-
-SymbolFileInfo::~SymbolFileInfo() {
-}
